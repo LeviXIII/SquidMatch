@@ -1,5 +1,114 @@
-body {
+/* body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+} */
+
+/* Custom Font Definition */
+@font-face {
+  font-family: 'overpass';
+  src: url(../src/Fonts/overpass-heavy.otf);
+}
+
+@font-face {
+  font-family: 'paintball';
+  src: url(../src/Fonts/Paintball.ttf);
+}
+
+  .mainBackground {
+  position: absolute;
+  background-attachment: fixed;
+  background-image: url("../src/Images/bodyBackground.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-blend-mode: lighten;
+  width: 100%; }
+
+.loginBackground {
+  background-image: url("../src/Images/paintBackground.jpg");
+}
+
+.headerSubTitle, .subTitle {
+  color: #948f8f;
+}
+
+.checkBoxLength {
+  display: block;
+  width: 100%;
+  margin: 0%, auto;
+  padding-bottom: 5%;
+  text-align: center;
+}
+
+.divBorder {
+  border: 1px solid gainsboro;
+  border-radius: 10px;
+}
+
+.formSettings {
+  margin-top: 15vh;
+  background-color: white;
+}
+
+.headings {
+  font-family: "overpass";
+  display: block;
+  width: 100%;
+  margin-top: 5%;
+  text-align: center;
+}
+
+.iconDiv {
+  max-width: 20%;
+  max-height: 10vh;
+}
+
+.iconSettings {
+  /* max-width: 100%;
+  max-height: 100%; */
+  margin-right: 20px;
+  height: 20px;
+}
+
+.jumbotron {
+  margin-bottom: 0rem;
+  padding: 0rem 0rem 1rem 0rem;
+  background-image: url("../src/Images/headerBackground.png");
+  background-size: cover;
+  height: auto;
+}
+
+.loginButton {
+  width: 100px;
+  background-color: #7aff42;
+}
+
+.overpass {
+  font-family: 'overpass';
+}
+
+.signupButton {
+  width: 100px;
+  background-color: #ff43b7;
+}
+.siteTitle {
+  font-family: 'paintball';
+  display: block;
+  width: 100%;
+  margin: 0%, auto;
+  text-align: center;
+  background: -webkit-linear-gradient(top, #ff43b7, #7aff42);
+  background: linear-gradient(top, #ff43b7, #7aff42);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.splatoonFont, .subTitle {
+  font-family: 'paintball';
+}
+
+.subTitle {
+  text-align: center;
 }
