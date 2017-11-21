@@ -18,21 +18,29 @@
   .mainBackground {
   position: absolute;
   background-attachment: fixed;
-  background-image: url("../src/Images/bodyBackground.png");
+  background-image: url("./Images/bodyBackground.png");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
   background-color: rgba(255, 255, 255, 0.7);
   background-blend-mode: lighten;
-  width: 100%; }
+  width: 100%;
+}
 
 .loginBackground {
-  background-image: url("../src/Images/paintBackground.jpg");
+  position: absolute;
+  background-attachment: fixed;
+  background-image: url("./Images/paintBackground.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
 }
 
-.headerSubTitle, .subTitle {
+/* .headerSubTitle, .subTitle {
   color: #948f8f;
-}
+} */
 
 .checkBoxLength {
   display: block;
@@ -45,6 +53,11 @@
 .divBorder {
   border: 1px solid gainsboro;
   border-radius: 10px;
+}
+
+.formAccountSettings {
+  margin-top: 5vh;
+  background-color: white;
 }
 
 .formSettings {
@@ -80,35 +93,35 @@
   height: auto;
 }
 
-.loginButton {
+/* .loginButton {
   width: 100px;
   background-color: #7aff42;
-}
+} */
 
 .overpass {
   font-family: 'overpass';
 }
 
-.signupButton {
+/* .signupButton {
   width: 100px;
   background-color: #ff43b7;
-}
+} */
+
 .siteTitle {
   font-family: 'paintball';
   display: block;
   width: 100%;
   margin: 0%, auto;
   text-align: center;
-  background: -webkit-linear-gradient(top, #ff43b7, #7aff42);
   background: linear-gradient(top, #ff43b7, #7aff42);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.splatoonFont, .subTitle {
+/* .splatoonFont, .subTitle {
   font-family: 'paintball';
-}
+} */
 
-.subTitle {
+/* .subTitle {
   text-align: center;
-}
+} */
