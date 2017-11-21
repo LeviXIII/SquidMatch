@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Form, FormGroup, Col, 
         Checkbox, Button, FormControl,
-        ControlLabel, InputGroup} from 'react-bootstrap';
+        ControlLabel, InputGroup } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import '../index.css';
 import squidIcon from '../Images/squidIcon.png';
 import passwordIcon from '../Images/passwordIcon.png';
@@ -136,20 +137,24 @@ class AccountInfo extends Component {
                 <FormGroup>
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
+                    <Link to="./home">
                     <Button style={loginButton} type="button"
                             onChange={(e) => this.props.submitForm(e)}>
                         Create
                     </Button>
+                    </Link>
                     </Col>
                 </FormGroup>
                 :
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
+                    <Link to="./home">
                     <Button style={signupButton} type="button"
                             onClick={this.props.verifyPassword}>
                         Update
                     </Button>
+                    </Link>
                     </Col>
                 </FormGroup>
                 }
@@ -182,7 +187,7 @@ const loginButton = {
 const subTitle = {
     fontFamily: 'paintball',
     textAlign: 'center',
-    color: '#1048f8f',
+    color: '#948f8f',
 }
 
 export default AccountInfo;

@@ -1,9 +1,3 @@
-/* body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-} */
-
 /* Custom Font Definition */
 @font-face {
   font-family: 'overpass';
@@ -15,27 +9,30 @@
   src: url(../src/Fonts/Paintball.ttf);
 }
 
-  .mainBackground {
+.mainBackground {
   position: absolute;
   background-attachment: fixed;
-  background-image: url("./Images/bodyBackground.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  background-color: rgba(255, 255, 255, 0.7);
-  background-blend-mode: lighten;
-  width: 100%;
-}
-
-.loginBackground {
-  position: absolute;
-  background-attachment: fixed;
-  background-image: url("./Images/paintBackground.jpg");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
   width: 100%;
   height: 100vh;
+}
+
+/* Small screen display */
+@media only screen and (min-width: 200px) and (max-width: 1024px) {
+  .mainBackground {
+    background-image: url("./Images/paintBackground.jpg");
+  }
+}
+
+/* Medium to large display */
+@media only screen and (min-width: 1025px) and (max-width: 1440px) {
+  .mainBackground {
+    background-image: url("./Images/bodyBackground.png");
+    background-color: rgba(255, 255, 255, 0.7);
+    background-blend-mode: lighten;
+  }
 }
 
 /* .headerSubTitle, .subTitle {
@@ -91,6 +88,7 @@
   background-image: url("../src/Images/headerBackground.png");
   background-size: cover;
   height: auto;
+  width: 100%;
 }
 
 /* .loginButton {

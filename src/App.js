@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import LoginForm from './Components/LoginForm';
 import AccountInfo from './Components/AccountInfo';
+import Home from './Components/Home';
 
 import './App.css';
 
@@ -54,7 +55,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="loginBackground">
+      <div className="mainBackground">
         <Route path="/" exact render={() => 
           <LoginForm  loginForm={this.loginForm}
                       getUsername={this.getUsername}
@@ -66,8 +67,13 @@ class App extends Component {
                       verifyPassword={this.verifyPassword}
                       showCreateButton={this.state.showCreateButton}
                       showPasswordField={this.state.showPasswordField}/>} />
-        <Route path="/AccountInfo" exact render={() =>
+        <Route path="/account-info" exact render={() =>
           <AccountInfo loginForm={this.loginForm}
+                        username={this.state.username}
+                        userPassword={this.state.userPassword}
+                        showCreateButton={this.state.showCreateButton}/>}/>
+        <Route path="/home" exact render={() =>
+          <Home loginForm={this.loginForm}
                         username={this.state.username}
                         userPassword={this.state.userPassword}
                         showCreateButton={this.state.showCreateButton}/>}/>

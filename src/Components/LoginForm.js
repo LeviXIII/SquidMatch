@@ -93,7 +93,7 @@ class LoginForm extends Component {
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                        <Link to="./AccountInfo">
+                        <Link to="./account-info">
                         <Button style={signupButton} type="button">
                             Create Account
                         </Button>
