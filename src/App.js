@@ -15,6 +15,15 @@ class App extends Component {
     this.state = {
       username: '',
       userPassword: '',
+      userEmail: '',
+      userNsid: '',
+      userAge: '< 20',
+      userLocation: 'Canada',
+      userRank: 'C',
+      userMode: 'Turf War',
+      userWeapon: 'Shooters',
+      userStatus: 'Available',
+      userAvatar: '',
       verifiedPassword: '',
       showPasswordField: false,
       showCreateButton: false,
@@ -34,22 +43,17 @@ class App extends Component {
     this.setState({ showCreateButton: false })
   }
 
-  getUsername = (e) => {
-    e.preventDefault();
-    this.setState({ username: e.target.value })
-    console.log(this.state.username);
+  getUserLoginInput = (e) => {
+    this.setState({ 
+      [e.target.name]: e.target.value
+    })
   }
 
-  getUserPassword = (e) => {
-    e.preventDefault();
-    this.setState({ userPassword: e.target.value })
-    console.log(this.state.userPassword);
-  }
-
-  getVerifiedPassword = (e) => {
-    e.preventDefault();
-    this.setState({ verifiedPassword: e.target.value })
-    console.log(this.state.verifiedPassword);
+  getAccountInfo = (e) => {
+    this.setState({ 
+      [e.target.name]: e.target.value
+    })
+    console.log(e.target.name+' :'+e.target.value);
   }
   
 
@@ -58,9 +62,7 @@ class App extends Component {
       <div className="mainBackground">
         <Route path="/" exact render={() => 
           <LoginForm  loginForm={this.loginForm}
-                      getUsername={this.getUsername}
-                      getUserPassword={this.getUserPassword} 
-                      getVerifiedPassword={this.getVerifiedPassword}
+                      getUserLoginInput={this.getUserLoginInput}
                       username={this.state.username}
                       userPassword={this.state.userPassword}
                       verifiedPassword={this.state.verifiedPassword}
@@ -68,15 +70,23 @@ class App extends Component {
                       showCreateButton={this.state.showCreateButton}
                       showPasswordField={this.state.showPasswordField}/>} />
         <Route path="/account-info" exact render={() =>
-          <AccountInfo loginForm={this.loginForm}
-                        username={this.state.username}
+          <AccountInfo  username={this.state.username}
                         userPassword={this.state.userPassword}
+                        userEmail={this.state.userEmail}
+                        userNsid={this.state.userNsid}
+                        userAge={this.state.userAge}
+                        userLocation={this.state.userLocation}
+                        userRank={this.state.userRank}
+                        userMode={this.state.userMode}
+                        userWeapon={this.state.userWeapon}
+                        userStatus={this.state.userStatus}
+                        userAvatar={this.state.userAvatar}
+                        getAccountInfo={this.getAccountInfo}
                         showCreateButton={this.state.showCreateButton}/>}/>
         <Route path="/home" exact render={() =>
-          <Home loginForm={this.loginForm}
-                        username={this.state.username}
-                        userPassword={this.state.userPassword}
-                        showCreateButton={this.state.showCreateButton}/>}/>
+          <Home username={this.state.username}
+                userPassword={this.state.userPassword}
+                showCreateButton={this.state.showCreateButton}/>}/>
       </div>
     );
   }

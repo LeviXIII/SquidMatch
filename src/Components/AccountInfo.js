@@ -3,11 +3,33 @@ import { Form, FormGroup, Col,
         Checkbox, Button, FormControl,
         ControlLabel, InputGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
 import '../index.css';
 import squidIcon from '../Images/squidIcon.png';
 import passwordIcon from '../Images/passwordIcon.png';
 
 class AccountInfo extends Component {
+
+    registerInfo = () => {
+        axios.post('/register', {
+            username: this.props.username,
+            password: this.props.userPassword,
+            email: this.props.userEmail,
+            nsid: this.props.userNsid,
+            age: this.props.userAge,
+            userLocation: this.props.userLocation,
+            userRank: this.props.userRank,
+            userMode: this.props.userMode,
+            userWeapon: this.props.userWeapon,
+            userStatus: this.props.userStatus,
+            userAvatar: this.props.userAvatar,
+        })
+        .then(result => {
+            console.log(result);
+            console.log('You did it!');
+        })
+    }
 
     render() {
         return (
@@ -20,8 +42,8 @@ class AccountInfo extends Component {
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
                         <FormControl value={this.props.userEmail}
-                                    type="email" placeholder="Email"
-                                    onChange={e => this.props.getUserEmail(e)} />
+                                    type="email" placeholder="Email" name="userEmail"
+                                    onChange={e => this.props.getAccountInfo(e)} />
                     </Col>
                 </FormGroup>
 
@@ -30,9 +52,9 @@ class AccountInfo extends Component {
                         NS_ID
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
-                        <FormControl value={this.props.userNSID}
-                                    type="text" placeholder="NSID" 
-                                    onChange={e => this.props.getUserPassword(e)} />  
+                        <FormControl type="text" placeholder="1234-5678-9012" 
+                                    name="userNSID" value={this.props.userNSID}
+                                    onChange={e => this.props.getAccountInfo(e)} />  
                     </Col>
                 </FormGroup>
 
@@ -41,11 +63,13 @@ class AccountInfo extends Component {
                         Age
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value='select1'>{'< '}20</option>
-                            <option value="select1">21-25</option>
-                            <option value="select1">26-30</option>
-                            <option value="select1">{"> "}31</option>
+                        <FormControl componentClass="select" placeholder="< 20"
+                                    name="userAge" value={this.props.userAge}
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="< 20">{'< '}20</option>
+                            <option value="21-25">21-25</option>
+                            <option value="26-30">26-30</option>
+                            <option value="> 31">{"> "}31</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
@@ -55,38 +79,45 @@ class AccountInfo extends Component {
                         Location
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10} >
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value="select2">Canada</option>
-                            <option value="select2">USA</option>
-                            <option value="select2">Europe</option>
-                            <option value="select2">Japan</option>
+                        <FormControl componentClass="select" placeholder="Canada"
+                                    name="userLocation" value={this.props.userLocation}
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="Canada">Canada</option>
+                            <option value="USA">USA</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Japan">Japan</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
 
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={3} sm={2}>
-                        Skill
+                        Rank
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10}>
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value="select3">Beginner</option>
-                            <option value="select3">Intermediate</option>
-                            <option value="select3">Advanced</option>
-                            <option value="select3">Expert</option>
+                        <FormControl componentClass="select" placeholder="C"
+                                    name="userRank" value={this.props.userRank}
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="C">C</option>
+                            <option value="B">B</option>
+                            <option value="A">A</option>
+                            <option value="S">S</option>
+                            <option value="S+">S+</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
 
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={3} sm={2}>
-                        Playstyle
+                        Mode
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10}>
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value="select4">Casual</option>
-                            <option value="select4">Competitive</option>
-                            <option value="select4">Playful</option>
+                        <FormControl componentClass="select" placeholder="Turf War"
+                                    name="userMode" 
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="Turf War">Turf War</option>
+                            <option value="Ranked">Ranked</option>
+                            <option value="Salmon Run">Salmon Run</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
@@ -96,14 +127,16 @@ class AccountInfo extends Component {
                         Main
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10} >
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value="select5">Shooters</option>
-                            <option value="select5">Rollers</option>
-                            <option value="select5">Chargers</option>
-                            <option value="select5">Sloshers</option>
-                            <option value="select5">Splatlings</option>
-                            <option value="select5">Dualies</option>
-                            <option value="select5">Brellas</option>
+                        <FormControl componentClass="select" placeholder="select"
+                                    name="userMain" value={this.props.userMain}
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="Shooters">Shooters</option>
+                            <option value="Rollers">Rollers</option>
+                            <option value="Chargers">Chargers</option>
+                            <option value="Sloshers">Sloshers</option>
+                            <option value="Splatlings">Splatlings</option>
+                            <option value="Dualies">Dualies</option>
+                            <option value="Brellas">Brellas</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
@@ -113,11 +146,13 @@ class AccountInfo extends Component {
                         Status
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10} >
-                        <FormControl componentClass="select" placeholder="select">
-                            <option value="select6">Available</option>
-                            <option value="select6">Unavailable</option>
-                            <option value="select6">Appear Offline</option>
-                            <option value="select6">Offline</option>
+                        <FormControl componentClass="select" placeholder="select"
+                                    name="userStatus" value={this.props.userStatus}
+                                    onChange={e => this.props.getAccountInfo(e)}>
+                            <option value="Available">Available</option>
+                            <option value="Unavailable">Unavailable</option>
+                            <option value="Appear Offline">Appear Offline</option>
+                            <option value="Offline">Offline</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
@@ -127,9 +162,9 @@ class AccountInfo extends Component {
                         Avatar
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10} >
-                        <FormControl value={this.props.userNSID}
-                                    type="text" placeholder="Image link" 
-                                    onChange={e => this.props.getUserPassword(e)} />  
+                        <FormControl type="text" placeholder="Image link" 
+                                    name="userAvatar" value={this.props.userAvatar}
+                                    onChange={e => this.props.getAccountInfo(e)} />  
                     </Col>
                 </FormGroup>
             
@@ -139,7 +174,7 @@ class AccountInfo extends Component {
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
                     <Link to="./home">
                     <Button style={loginButton} type="button"
-                            onChange={(e) => this.props.submitForm(e)}>
+                            onClick={(e) => this.registerInfo(e)}>
                         Create
                     </Button>
                     </Link>

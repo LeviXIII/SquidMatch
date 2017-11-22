@@ -13,6 +13,7 @@
     "react-scripts": "1.0.17",
     "react-textgradient": "^0.0.2"
   },
+  "proxy": "http://localhost:8080",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

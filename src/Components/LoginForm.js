@@ -7,7 +7,25 @@ import '../index.css';
 import squidIcon from '../Images/squidIcon.png';
 import passwordIcon from '../Images/passwordIcon.png';
 
+let createAccountLink = '';
+let verifyMessage = '';
+let verifyButton = 'Verify Password';
+
 class LoginForm extends Component {
+
+    //Check password length and validation.
+    checkPassword = () => {
+        if (this.props.verifiedPassword === this.props.userPassword &&
+            this.props.userPassword.length >= 8) {
+            createAccountLink = '/account-info'
+            verifyButton = 'Create Account';
+            verifyMessage = "Great! Click 'Create Account' to continue"
+        }
+        else {
+            createAccountLink = '#'
+            verifyMessage = "Your passwords didn't match or are too short."
+        }
+    }
 
     render() {        
         return (
@@ -23,8 +41,8 @@ class LoginForm extends Component {
                             <img className="iconSettings img-responsive" src={squidIcon} />
                         </InputGroup.Addon>
                         <FormControl value={this.props.username}
-                                    type="text" placeholder="Username"
-                                    onChange={e => this.props.getUsername(e)} />
+                                    type="text" placeholder="Username" name="username"
+                                    onChange={e => this.props.getUserLoginInput(e)} />
                     </InputGroup>
                     </Col>
                 </FormGroup>
@@ -37,8 +55,8 @@ class LoginForm extends Component {
                             <img className="iconSettings img-responsive" src={passwordIcon} />
                         </InputGroup.Addon>
                         <FormControl value={this.props.userPassword}
-                                    type="password" placeholder="Password" 
-                                    onChange={e => this.props.getUserPassword(e)} />  
+                                    type="password" placeholder="Password" name="userPassword" 
+                                    onChange={e => this.props.getUserLoginInput(e)} />
                     </InputGroup>
                     </Col>
                 </FormGroup>
@@ -52,18 +70,19 @@ class LoginForm extends Component {
                         <InputGroup.Addon>
                             <img className="iconSettings img-responsive" src={passwordIcon} />
                         </InputGroup.Addon>
-                        <FormControl value={this.props.verifiedPassword}
+                        <FormControl value={this.props.verifiedPassword} name="verifiedPassword"
                                     type="password" placeholder="Verify Password" 
-                                    onChange={e => this.props.getVerifiedPassword(e)} />  
+                                    onChange={e => this.props.getUserLoginInput(e)} />
                     </InputGroup>
                     </Col>
                 </FormGroup>
                 }
 
+                <h4 style={subTitle}>*Passwords need to be at least 8 characters long</h4>
                 <FormGroup>
                     <Col xs={8} sm={5} md={4} lg={3} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                    <Checkbox className="headings">Remember me</Checkbox>
+                    {/* <Checkbox className="headings">Remember Me</Checkbox> */}
                     </Col>
                 </FormGroup>
             
@@ -77,6 +96,7 @@ class LoginForm extends Component {
                     </Col>
                 </FormGroup>
 
+                {/* Only show Create Account button if signup is pressed. */}
                 {!this.props.showCreateButton &&
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
@@ -93,14 +113,16 @@ class LoginForm extends Component {
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                        <Link to="./account-info">
-                        <Button style={signupButton} type="button">
-                            Create Account
-                        </Button>
+                        <Link to={createAccountLink}>
+                            <Button style={signupButton} type="button"
+                                    onClick={this.checkPassword}>
+                                {verifyButton}
+                            </Button>
                         </Link>
                     </Col>
                 </FormGroup>
                 }
+                <h3 style={subTitle}>{verifyMessage}</h3>
             </Form>
         </div>
         );
