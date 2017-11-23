@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, FormGroup, Col, 
         Checkbox, Button, FormControl,
         ControlLabel, InputGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 import '../index.css';
@@ -11,27 +11,12 @@ import passwordIcon from '../Images/passwordIcon.png';
 
 class AccountInfo extends Component {
 
-    registerInfo = () => {
-        axios.post('/register', {
-            username: this.props.username,
-            password: this.props.userPassword,
-            email: this.props.userEmail,
-            nsid: this.props.userNsid,
-            age: this.props.userAge,
-            userLocation: this.props.userLocation,
-            userRank: this.props.userRank,
-            userMode: this.props.userMode,
-            userWeapon: this.props.userWeapon,
-            userStatus: this.props.userStatus,
-            userAvatar: this.props.userAvatar,
-        })
-        .then(result => {
-            console.log(result);
-            console.log('You did it!');
-        })
-    }
-
     render() {
+
+        if (this.props.isLoggedIn === true) {
+            return <Redirect to="/home" />
+        }
+
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1>
@@ -42,7 +27,7 @@ class AccountInfo extends Component {
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
                         <FormControl value={this.props.userEmail}
-                                    type="email" placeholder="Email" name="userEmail"
+                                    type="email" placeholder="email@mail.com" name="userEmail"
                                     onChange={e => this.props.getAccountInfo(e)} />
                     </Col>
                 </FormGroup>
@@ -53,7 +38,7 @@ class AccountInfo extends Component {
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
                         <FormControl type="text" placeholder="1234-5678-9012" 
-                                    name="userNSID" value={this.props.userNSID}
+                                    name="userNsid" value={this.props.userNsid}
                                     onChange={e => this.props.getAccountInfo(e)} />  
                     </Col>
                 </FormGroup>
@@ -168,16 +153,14 @@ class AccountInfo extends Component {
                     </Col>
                 </FormGroup>
             
-                {this.props.showCreateButton ?
+                {!this.props.isLoggedIn ?
                 <FormGroup>
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                    <Link to="./home">
-                    <Button style={loginButton} type="button"
-                            onClick={(e) => this.registerInfo(e)}>
-                        Create
-                    </Button>
-                    </Link>
+                        <Button style={loginButton} type="button"
+                                onClick={this.props.registerInfo}>
+                            Create
+                        </Button>
                     </Col>
                 </FormGroup>
                 :
@@ -193,6 +176,7 @@ class AccountInfo extends Component {
                     </Col>
                 </FormGroup>
                 }
+                <h4 style={subTitle}>{this.props.verifyMessage}</h4>
             </Form>
         </div>
         );

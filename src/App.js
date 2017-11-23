@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 import LoginForm from './Components/LoginForm';
@@ -25,10 +25,25 @@ class App extends Component {
       userStatus: 'Available',
       userAvatar: '',
       verifiedPassword: '',
+      verifyMessage: '',
+      isLoggedIn: false,
+      accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
     }
   
+  }
+
+  //Check if the token is still valid.
+  verifyToken = () => {
+    axios.post('/verify-token', {
+      currentToken: localStorage.getItem('token')
+    })
+    .then(result => {
+      if (result.data.token === false) {
+        this.setState({ isLoggedIn: false });
+      }
+    });
   }
 
   verifyPassword = () => {
@@ -38,8 +53,62 @@ class App extends Component {
     });
   }
 
+  //Registers a new user.
+  registerInfo = () => {
+    axios.post('/register', {
+        username: this.state.username,
+        password: this.state.userPassword,
+        email: this.state.userEmail,
+        nsid: this.state.userNsid,
+        age: this.state.userAge,
+        location: this.state.userLocation,
+        rank: this.state.userRank,
+        mode: this.state.userMode,
+        weapon: this.state.userWeapon,
+        status: this.state.userStatus,
+        avatar: this.state.userAvatar,
+    })
+    .then(result => {
+        console.log(result);
+        // if (result.data.signedUp === false) {
+          
+        // }
+        // else {
+          localStorage.setItem('token', result.data.token);
+          this.setState({ isLoggedIn: true });
+        //}
+    })
+    .catch(error => {
+      this.setState({ 
+        verifyMessage: "Your email or NSID are incorrect.",
+      })
+      console.log("There was an error: " + error);
+    })
+  }
+
   loginForm = (e) => {
     e.preventDefault();
+    
+    //Post the info to the database to check if the user exists.
+    axios.post('/login', {
+      username: this.state.username,
+      password: this.state.userPassword,
+    })
+    .then(result => {
+      if (result.data.message === undefined || null) {
+        localStorage.setItem('token', result.data.token);
+        this.setState({ isLoggedIn: true });
+      }
+      else {
+        this.setState({ verifyMessage: result.data.message });
+      }
+    })
+    .catch(error => {
+      console.log("There was an error: " + error)
+    })
+
+    //Decide whether to show the Create Button on the Create Account
+    //form.
     this.setState({ showCreateButton: false })
   }
 
@@ -53,22 +122,43 @@ class App extends Component {
     this.setState({ 
       [e.target.name]: e.target.value
     })
-    console.log(e.target.name+' :'+e.target.value);
   }
-  
+
+  //Check password length and validation.
+  checkPassword = () => {
+    if (this.state.verifiedPassword === this.state.userPassword &&
+        this.state.userPassword.length >= 8) {
+
+        this.setState({
+          accountRedirect: true,
+          verifyMessage: ''
+        });
+    }
+    else {
+      this.setState({
+        verifyMessage: "Your password doesn't match or is too short."
+      })
+    }
+  }
 
   render() {
     return (
       <div className="mainBackground">
         <Route path="/" exact render={() => 
-          <LoginForm  loginForm={this.loginForm}
-                      getUserLoginInput={this.getUserLoginInput}
-                      username={this.state.username}
+          <LoginForm  username={this.state.username}
                       userPassword={this.state.userPassword}
                       verifiedPassword={this.state.verifiedPassword}
-                      verifyPassword={this.verifyPassword}
+                      verifyMessage={this.state.verifyMessage}
+                      accountRedirect={this.state.accountRedirect}
                       showCreateButton={this.state.showCreateButton}
-                      showPasswordField={this.state.showPasswordField}/>} />
+                      showPasswordField={this.state.showPasswordField}
+                      isLoggedIn={this.state.isLoggedIn}
+                      loginForm={this.loginForm}
+                      getUserLoginInput={this.getUserLoginInput}
+                      verifyToken={this.verifyToken}
+                      verifyPassword={this.verifyPassword}
+                      checkPassword={this.checkPassword}/>} />
+                      
         <Route path="/account-info" exact render={() =>
           <AccountInfo  username={this.state.username}
                         userPassword={this.state.userPassword}
@@ -81,12 +171,18 @@ class App extends Component {
                         userWeapon={this.state.userWeapon}
                         userStatus={this.state.userStatus}
                         userAvatar={this.state.userAvatar}
-                        getAccountInfo={this.getAccountInfo}
-                        showCreateButton={this.state.showCreateButton}/>}/>
+                        isLoggedIn={this.state.isLoggedIn}
+                        verifyMessage={this.state.verifyMessage}
+                        registerInfo={this.registerInfo}
+                        getAccountInfo={this.getAccountInfo}/>}/>
+                        {/* showCreateButton={this.state.showCreateButton} */}
+        
+        {this.state.isLoggedIn &&
         <Route path="/home" exact render={() =>
           <Home username={this.state.username}
-                userPassword={this.state.userPassword}
-                showCreateButton={this.state.showCreateButton}/>}/>
+                userPassword={this.state.userPassword}/>}/>
+                // showCreateButton={this.state.showCreateButton}
+        }
       </div>
     );
   }
