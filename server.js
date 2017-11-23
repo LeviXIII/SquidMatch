@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('./models/User');
 
+const config = require('./config.js');
+
 const PORT = 8080; 
 const MONGO_CONNECTION_STRING = 'mongodb://localhost:27017/data/db';
 
@@ -14,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(MONGO_CONNECTION_STRING);
 
 const connection = mongoose.connection;
-const secretKey = '`liQjHd7cc#V~=n9Ap|0wQ!w;Rk)(t';
+const secretKey = config.token_secretKey;
 
 //Open connections
 connection.on('open', () => {
@@ -67,7 +69,7 @@ app.post('/login', (req, res) => {
     //Compare the password against the hashed one.
     bcrypt.compare(passwordGuess, result.password, (err, match) => {
       if (err) {
-          return res.status(500);
+        return res.status(500);
       }
 
       if(match) {
@@ -98,6 +100,7 @@ app.post('/login', (req, res) => {
 
   })
   .catch(error => {
+    res.json({ message: "We couldn't find your account. Please register or try again." });
     console.log(error);
   })
   

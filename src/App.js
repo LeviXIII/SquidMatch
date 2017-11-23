@@ -69,14 +69,8 @@ class App extends Component {
         avatar: this.state.userAvatar,
     })
     .then(result => {
-        console.log(result);
-        // if (result.data.signedUp === false) {
-          
-        // }
-        // else {
-          localStorage.setItem('token', result.data.token);
-          this.setState({ isLoggedIn: true });
-        //}
+      localStorage.setItem('token', result.data.token);
+      this.setState({ isLoggedIn: true });
     })
     .catch(error => {
       this.setState({ 
@@ -89,24 +83,30 @@ class App extends Component {
   loginForm = (e) => {
     e.preventDefault();
     
-    //Post the info to the database to check if the user exists.
-    axios.post('/login', {
-      username: this.state.username,
-      password: this.state.userPassword,
-    })
-    .then(result => {
-      if (result.data.message === undefined || null) {
-        localStorage.setItem('token', result.data.token);
-        this.setState({ isLoggedIn: true });
-      }
-      else {
-        this.setState({ verifyMessage: result.data.message });
-      }
-    })
-    .catch(error => {
-      console.log("There was an error: " + error)
-    })
-
+    if (this.state.username !== '' && this.state.userPassword !== '') {
+      //Post the info to the database to check if the user exists.
+      axios.post('/login', {
+        username: this.state.username,
+        password: this.state.userPassword,
+      })
+      .then(result => {
+        if (result.data.message === undefined || null) {
+          localStorage.setItem('token', result.data.token);
+          this.setState({ isLoggedIn: true });
+        }
+        else {
+          this.setState({ verifyMessage: result.data.message });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({ verifyMessage: "Please sign up for an account." });
+      })
+    }
+    else {
+      this.setState({ verifyMessage: "Please enter a valid username or password."})
+    }
+    
     //Decide whether to show the Create Button on the Create Account
     //form.
     this.setState({ showCreateButton: false })
