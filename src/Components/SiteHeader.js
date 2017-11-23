@@ -19,7 +19,7 @@ class SiteHeader extends Component {
                             <NavItem>Calendar</NavItem>
                         </Nav>
                         <Nav style={navItemStyle} pullRight>
-                            <NavItem>Logout</NavItem>
+                            <NavItem onClick={this.props.userLogout}>Logout</NavItem>
                             <NavItem>Avatar</NavItem>
                         </Nav>
                     </Navbar.Collapse>

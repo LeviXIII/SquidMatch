@@ -27,6 +27,7 @@ class App extends Component {
       verifiedPassword: '',
       verifyMessage: '',
       isLoggedIn: false,
+      isRegistering: false,
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
@@ -46,6 +47,7 @@ class App extends Component {
     });
   }
 
+  //Sets state for verify password field to appear.
   verifyPassword = () => {
     this.setState({
       showPasswordField: true,
@@ -70,7 +72,10 @@ class App extends Component {
     })
     .then(result => {
       localStorage.setItem('token', result.data.token);
-      this.setState({ isLoggedIn: true });
+      this.setState({
+        isLoggedIn: true,
+        accountRedirect: false,
+      });
     })
     .catch(error => {
       this.setState({ 
@@ -80,6 +85,7 @@ class App extends Component {
     })
   }
 
+  //Log the user in.
   loginForm = (e) => {
     e.preventDefault();
     
@@ -112,6 +118,12 @@ class App extends Component {
     this.setState({ showCreateButton: false })
   }
 
+  //Log out the user
+  userLogout = () => {
+    localStorage.removeItem('token');
+    this.setState({ isLoggedIn: false });
+  }
+
   getUserLoginInput = (e) => {
     this.setState({ 
       [e.target.name]: e.target.value
@@ -129,10 +141,20 @@ class App extends Component {
     if (this.state.verifiedPassword === this.state.userPassword &&
         this.state.userPassword.length >= 8) {
 
-        this.setState({
-          accountRedirect: true,
-          verifyMessage: ''
-        });
+        axios.post('/check-user', {
+          username: this.state.username
+        })
+        .then(result => {
+          //If a user is found, tell them to use login.
+          this.setState({ verifyMessage: result.data.message });
+        })
+        .catch(error => {
+          this.setState({
+            accountRedirect: true,
+            verifyMessage: ''
+          });
+        })
+        
     }
     else {
       this.setState({
@@ -172,17 +194,15 @@ class App extends Component {
                         userStatus={this.state.userStatus}
                         userAvatar={this.state.userAvatar}
                         isLoggedIn={this.state.isLoggedIn}
+                        accountRedirect={this.state.accountRedirect}
                         verifyMessage={this.state.verifyMessage}
                         registerInfo={this.registerInfo}
                         getAccountInfo={this.getAccountInfo}/>}/>
                         {/* showCreateButton={this.state.showCreateButton} */}
-        
-        {this.state.isLoggedIn &&
+
         <Route path="/home" exact render={() =>
-          <Home username={this.state.username}
-                userPassword={this.state.userPassword}/>}/>
-                // showCreateButton={this.state.showCreateButton}
-        }
+          <Home isLoggedIn={this.state.isLoggedIn}
+                userLogout={this.userLogout}/>}/>
       </div>
     );
   }

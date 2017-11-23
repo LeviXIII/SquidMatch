@@ -58,6 +58,16 @@ app.post('/verify-token', (req, res) => {
   });
 })
 
+app.post('/check-user', (req, res) => {
+  User.findOne({ username: req.body.username })
+  .then(result => {
+    res.json({ message: 'Please sign in using your existing account.' });
+  })
+  .catch(error => {
+    console.log('No user found. Continue with registering.');
+  })
+})
+
 app.post('/login', (req, res) => {
   
   const username = req.body.username;

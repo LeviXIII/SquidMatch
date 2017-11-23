@@ -17,6 +17,10 @@ class AccountInfo extends Component {
             return <Redirect to="/home" />
         }
 
+        if (this.props.accountRedirect === false) {
+            return <Redirect to="/" />
+        }
+
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1>
