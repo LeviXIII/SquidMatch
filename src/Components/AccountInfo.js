@@ -171,7 +171,7 @@ class AccountInfo extends Component {
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                    <Link to="./home">
+                    <Link to="/home">
                     <Button style={signupButton} type="button"
                             onClick={this.props.verifyPassword}>
                         Update

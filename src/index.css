@@ -9,16 +9,6 @@
   src: url(../src/Fonts/Paintball.ttf);
 }
 
-.mainBackground {
-  position: absolute;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  width: 100%;
-  height: 100vh;
-}
-
 /* Small screen display */
 @media only screen and (min-width: 200px) and (max-width: 1024px) {
   .mainBackground {
@@ -35,6 +25,14 @@
   }
 }
 
+#nav-dropdown.dropdown-toggle {
+     padding-top: 7px;
+     padding-left: 0px;
+     padding-right: 0px;
+     padding-bottom: 0px;
+}
+
+
 /* .headerSubTitle, .subTitle {
   color: #948f8f;
 } */
@@ -50,6 +48,7 @@
 .divBorder {
   border: 1px solid gainsboro;
   border-radius: 10px;
+  margin-bottom: 10%;
 }
 
 .formAccountSettings {
@@ -87,14 +86,25 @@
   padding: 0rem 0rem 1rem 0rem;
   background-image: url("../src/Images/headerBackground.png");
   background-size: cover;
-  height: auto;
+  background-attachment: fixed;
   width: 100%;
+  height: auto;
 }
 
 /* .loginButton {
   width: 100px;
   background-color: #7aff42;
 } */
+
+.mainBackground {
+  position: absolute;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  width: 100%;
+  min-height: 100vh;
+}
 
 .overpass {
   font-family: 'overpass';

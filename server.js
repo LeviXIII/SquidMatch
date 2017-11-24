@@ -61,10 +61,10 @@ app.post('/verify-token', (req, res) => {
 app.post('/check-user', (req, res) => {
   User.findOne({ username: req.body.username })
   .then(result => {
-    res.json({ message: 'Please sign in using your existing account.' });
+    res.json({ result: result });
   })
   .catch(error => {
-    console.log('No user found. Continue with registering.');
+    console.log(error);
   })
 })
 
@@ -171,3 +171,24 @@ app.post('/register', (req, res) => {
   })
       
 }); //end app.post
+
+app.post('/search-criteria', (req, res) => {
+  
+  //Find the users that match the given criteria.
+  User.find({ 
+    status: req.body.status,
+    $or: [
+      {age: req.body.searchAge},
+      {location: req.body.searchLocation},
+      {rank: req.body.searchRank},
+      {mode: req.body.searchMode},
+      {weapon: req.body.searchWeapon}
+    ]
+  })
+  .then(result => {
+    res.json({result: result});
+  })
+  .catch(error => {
+    console.log("Couldn't get the users you searched for.");
+  })
+})

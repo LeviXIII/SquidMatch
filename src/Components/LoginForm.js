@@ -120,6 +120,7 @@ class LoginForm extends Component {
     }
 
 }
+
 //////////
 //Styles//
 //////////

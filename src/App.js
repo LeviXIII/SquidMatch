@@ -5,6 +5,9 @@ import axios from 'axios';
 import LoginForm from './Components/LoginForm';
 import AccountInfo from './Components/AccountInfo';
 import Home from './Components/Home';
+import SiteHeader from './Components/SiteHeader';
+import ChooseCriteria from './Components/ChooseCriteria';
+import Search from './Components/Search';
 
 import './App.css';
 
@@ -24,8 +27,18 @@ class App extends Component {
       userWeapon: 'Shooters',
       userStatus: 'Available',
       userAvatar: '',
+      searchAge: '< 20',
+      searchLocation: 'Canada',
+      searchRank: 'C',
+      searchMode: 'Turf War',
+      searchWeapon: 'Shooters',
       verifiedPassword: '',
       verifyMessage: '',
+      ageBox: false,
+      locationBox: false,
+      rankBox: false,
+      modeBox: false,
+      mainBox: false,
       isLoggedIn: false,
       isRegistering: false,
       accountRedirect: false,
@@ -101,27 +114,66 @@ class App extends Component {
           this.setState({ isLoggedIn: true });
         }
         else {
-          this.setState({ verifyMessage: result.data.message });
+          this.setState({
+            verifyMessage: result.data.message,
+            showCreateButton: false
+          });
         }
       })
       .catch(error => {
         console.log(error);
-        this.setState({ verifyMessage: "Please sign up for an account." });
+        this.setState({
+          verifyMessage: "Please sign up for an account.",
+          //showCreateButton: true
+        });
       })
     }
     else {
-      this.setState({ verifyMessage: "Please enter a valid username or password."})
+      this.setState({
+        verifyMessage: "Please enter a valid username or password.",
+        //showCreateButton: true
+      })
     }
     
     //Decide whether to show the Create Button on the Create Account
     //form.
-    this.setState({ showCreateButton: false })
+    //this.setState({ showCreateButton: true })
   }
 
   //Log out the user
   userLogout = () => {
     localStorage.removeItem('token');
-    this.setState({ isLoggedIn: false });
+    this.setState({
+      username: '',
+      userPassword: '',
+      userEmail: '',
+      userNsid: '',
+      userAge: '< 20',
+      userLocation: 'Canada',
+      userRank: 'C',
+      userMode: 'Turf War',
+      userWeapon: 'Shooters',
+      userStatus: 'Available',
+      userAvatar: '',
+      searchAge: '< 20',
+      searchLocation: 'Canada',
+      searchRank: 'C',
+      searchMode: 'Turf War',
+      searchWeapon: 'Shooters',
+      verifiedPassword: '',
+      verifyMessage: '',
+      ageBox: false,
+      locationBox: false,
+      rankBox: false,
+      modeBox: false,
+      mainBox: false,
+      isLoggedIn: false,
+      isRegistering: false,
+      accountRedirect: false,
+      showPasswordField: false,
+      showCreateButton: false,
+
+    });
   }
 
   getUserLoginInput = (e) => {
@@ -136,6 +188,35 @@ class App extends Component {
     })
   }
 
+  //Get the search criteria
+  getCriteria = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
+  getCriteriaCheckBox = (e) => {
+
+    if (this.state[e.target.name] === false) {
+      this.setState({
+        [e.target.name]: true
+      })
+    }
+    else {
+      this.setState({
+        [e.target.name]: false
+      })
+    }
+    console.log(e.target.name+ ': ' +e.target.value)
+  }
+
+  //Get the current status of the user.
+  getStatus = (status) => {
+    this.setState({
+      userStatus: status
+    })
+  }
+
   //Check password length and validation.
   checkPassword = () => {
     if (this.state.verifiedPassword === this.state.userPassword &&
@@ -146,15 +227,20 @@ class App extends Component {
         })
         .then(result => {
           //If a user is found, tell them to use login.
-          this.setState({ verifyMessage: result.data.message });
+          if (result.data.result !== null) {
+            this.setState({ verifyMessage: "Please sign in using your existing account." });
+          }
+          else {
+            //Otherwise, continue with registration.
+            this.setState({
+              accountRedirect: true,
+              verifyMessage: ''
+            });
+          }
         })
         .catch(error => {
-          this.setState({
-            accountRedirect: true,
-            verifyMessage: ''
-          });
+          console.log(error);
         })
-        
     }
     else {
       this.setState({
@@ -163,9 +249,29 @@ class App extends Component {
     }
   }
 
+  searchCriteria = () => {
+    axios.post('/search-criteria', {
+      status: this.state.userStatus,
+      searchAge: this.state.searchAge,
+      searchLocation: this.state.searchLocation,
+      searchRank: this.state.searchRank,
+      searchMode: this.state.searchMode,
+      searchWeapon: this.state.searchWeapon,
+    })
+    .then(result => {
+      console.log(result);
+    })
+  }
+
   render() {
     return (
       <div className="mainBackground">
+      {this.state.isLoggedIn &&
+        <SiteHeader username={this.state.username}
+                    userStatus={this.state.userStatus}
+                    userLogout={this.userLogout}
+                    getStatus={this.getStatus}
+      />}
         <Route path="/" exact render={() => 
           <LoginForm  username={this.state.username}
                       userPassword={this.state.userPassword}
@@ -201,8 +307,21 @@ class App extends Component {
                         {/* showCreateButton={this.state.showCreateButton} */}
 
         <Route path="/home" exact render={() =>
-          <Home isLoggedIn={this.state.isLoggedIn}
-                userLogout={this.userLogout}/>}/>
+          <Home isLoggedIn={this.state.isLoggedIn}/>}/>
+        
+        <Route path="/choose-criteria" exact render={() =>
+          <ChooseCriteria isLoggedIn={this.state.isLoggedIn}
+                          ageBox={this.state.ageBox}
+                          locationBox={this.state.locationBox}
+                          rankBox={this.state.rankBox}
+                          modeBox={this.state.modeBox}
+                          mainBox={this.state.mainBox}
+                          getCriteria={this.getCriteria}
+                          searchCriteria={this.searchCriteria}
+                          getCriteriaCheckBox={this.getCriteriaCheckBox}/>}/>
+        
+        <Route path="/search" exact render={() =>
+          <Search isLoggedIn={this.state.isLoggedIn}/>}/>
       </div>
     );
   }
