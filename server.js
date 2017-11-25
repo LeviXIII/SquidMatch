@@ -173,24 +173,66 @@ app.post('/register', (req, res) => {
 }); //end app.post
 
 app.post('/search-criteria', (req, res) => {
-  
-  console.log(req.body.searchStats);
+
+  //Build the query object in order to search dynamically.
+  searchQuery = {}
+  searchQuery['$and'] = []; //Start an $and query
+  searchQuery["$and"].push({ status: req.body.status}); //Always check for status.
+
+  //Magic!
+  //Check to see which elements in the array match the fields required to search.
+  //If they do, add the field to the query.
+  //If a value is "any", find all values in the field.
+  for (let i=0; i < req.body.searchArray.length; i++) {
+    if (/age.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+        searchQuery["$and"].push({ age: {$regex: /^.*$/ } }); //regex searches from start to end for anything.
+      }
+      else {
+        searchQuery["$and"].push({ age: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+      }
+    }
+    if (/location.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+        searchQuery["$and"].push({ location: {$regex: /^.*$/ } });
+      }
+      else {
+        searchQuery["$and"].push({ location: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+      }
+    }
+    if (/rank.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+        searchQuery["$and"].push({ rank: {$regex: /^.*$/ } });
+      }
+      else {
+        searchQuery["$and"].push({ rank: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+      }
+    }
+    if (/mode.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+        searchQuery["$and"].push({ mode: {$regex: /^.*$/ } });
+      }
+      else {
+        searchQuery["$and"].push({ mode: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+      }
+    }
+    if (/weapon.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+        searchQuery["$and"].push({ weapon: {$regex: /^.*$/ } });
+      }
+      else {
+        searchQuery["$and"].push({ weapon: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+      }
+    }
+  }
+
+  console.log(searchQuery);
   //Find the users that match the given criteria.
-  User.find({ 
-    status: req.body.status,
-    
-    // $or: [
-    //   {age: req.body.searchAge},
-    //   {location: req.body.searchLocation},
-    //   {rank: req.body.searchRank},
-    //   {mode: req.body.searchMode},
-    //   {weapon: req.body.searchWeapon}
-    // ]
-  })
+  User.find(searchQuery)
   .then(result => {
     res.json({result: result});
   })
   .catch(error => {
-    console.log("Couldn't get the users you searched for.");
+    console.log("Couldn't get the users you searched for." + error);
   })
 })

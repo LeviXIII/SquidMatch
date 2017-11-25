@@ -268,15 +268,17 @@ class App extends Component {
         searchArray.push({ [i]: this.state[i] });
       }
     }
-    
+
     console.log(searchArray);
+
     axios.post('/search-criteria', {
       status: this.state.userStatus,
+      searchArray: searchArray
       // searchAge: this.state.searchAge,
       // searchLocation: this.state.searchLocation,
       // searchRank: this.state.searchRank,
       // searchMode: this.state.searchMode,
-      // searchWeapon: this.state.searchWeapon,
+      // searchWeapon: this.state.searchWeapon
     })
     .then(result => {
       console.log(result);
