@@ -174,16 +174,18 @@ app.post('/register', (req, res) => {
 
 app.post('/search-criteria', (req, res) => {
   
+  console.log(req.body.searchStats);
   //Find the users that match the given criteria.
   User.find({ 
     status: req.body.status,
-    $or: [
-      {age: req.body.searchAge},
-      {location: req.body.searchLocation},
-      {rank: req.body.searchRank},
-      {mode: req.body.searchMode},
-      {weapon: req.body.searchWeapon}
-    ]
+    
+    // $or: [
+    //   {age: req.body.searchAge},
+    //   {location: req.body.searchLocation},
+    //   {rank: req.body.searchRank},
+    //   {mode: req.body.searchMode},
+    //   {weapon: req.body.searchWeapon}
+    // ]
   })
   .then(result => {
     res.json({result: result});

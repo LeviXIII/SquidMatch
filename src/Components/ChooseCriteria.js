@@ -25,7 +25,7 @@ class ChooseCriteria extends Component {
             </Col>
             <Col xs={8} sm={8} md={8} lg={8} >
                 <FormControl componentClass="select" placeholder="< 20"
-                            name="userAge" value={this.props.userAge}
+                            name="searchAge" value={this.props.searchAge}
                             disabled={this.props.ageBox}
                             onChange={e => this.props.getCriteria(e)}>
                     <option value="< 20">{'< '}20</option>
@@ -48,7 +48,7 @@ class ChooseCriteria extends Component {
             </Col>
             <Col xs={7} sm={8} md={8} lg={8} >
                 <FormControl componentClass="select" placeholder="Canada"
-                            name="userLocation" value={this.props.userLocation}
+                            name="searchLocation" value={this.props.searchLocation}
                             disabled={this.props.locationBox}
                             onChange={e => this.props.getCriteria(e)}>
                     <option value="Canada">Canada</option>
@@ -70,7 +70,7 @@ class ChooseCriteria extends Component {
             </Col>
             <Col xs={7} sm={8} md={8} lg={8}>
                 <FormControl componentClass="select" placeholder="C"
-                            name="userRank" value={this.props.userRank}
+                            name="searchRank" value={this.props.searchRank}
                             disabled={this.props.rankBox}
                             onChange={e => this.props.getCriteria(e)}>
                     <option value="C">C</option>
@@ -93,11 +93,11 @@ class ChooseCriteria extends Component {
             </Col>
             <Col xs={7} sm={8} md={8} lg={8}>
                 <FormControl componentClass="select" placeholder="Turf War"
-                            name="userMode" value={this.props.userMode}
+                            name="searchMode" value={this.props.searchMode}
                             disabled={this.props.modeBox}
                             onChange={e => this.props.getCriteria(e)}>
                     <option value="Turf War">Turf War</option>
-                    <option value="Ranked">Ranked</option>
+                    <option value="League">League</option>
                     <option value="Salmon Run">Salmon Run</option>
                     <option value="Any">Any</option>
                 </FormControl>
@@ -110,12 +110,12 @@ class ChooseCriteria extends Component {
 
         <FormGroup style={subTitle} controlId="formHorizontalPassword">
             <Col componentClass={ControlLabel} xs={3} sm={2}>
-                Main
+                Weapon
             </Col>
             <Col xs={7} sm={8} md={8} lg={8} >
                 <FormControl componentClass="select" placeholder="select"
-                            name="userMain" value={this.props.userMain}
-                            disabled={this.props.mainBox}
+                            name="searchWeapon" value={this.props.searchWeapon}
+                            disabled={this.props.weaponBox}
                             onChange={e => this.props.getCriteria(e)}>
                     <option value="Shooters">Shooters</option>
                     <option value="Rollers">Rollers</option>
@@ -128,7 +128,7 @@ class ChooseCriteria extends Component {
                 </FormControl>
             </Col>
             <Col xs={2} sm={2} md={2} lg={2}>
-                <Checkbox name="mainBox" checked={this.props.mainBox}
+                <Checkbox name="weaponBox" checked={this.props.weaponBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
             </Col>
         </FormGroup>
@@ -139,7 +139,7 @@ class ChooseCriteria extends Component {
                 <Link to="/search">
                     <Button style={loginButton} type="button"
                             onClick={this.props.searchCriteria}>
-                        Next
+                        Search
                     </Button>
                 </Link>
             </Col>

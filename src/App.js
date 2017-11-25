@@ -38,7 +38,7 @@ class App extends Component {
       locationBox: false,
       rankBox: false,
       modeBox: false,
-      mainBox: false,
+      weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
       accountRedirect: false,
@@ -166,7 +166,7 @@ class App extends Component {
       locationBox: false,
       rankBox: false,
       modeBox: false,
-      mainBox: false,
+      weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
       accountRedirect: false,
@@ -193,10 +193,10 @@ class App extends Component {
     this.setState({
       [e.target.name]: e.target.value
     })
+    console.log('CRITERIA: '+e.target.name+ ': ' +e.target.value)
   }
 
   getCriteriaCheckBox = (e) => {
-
     if (this.state[e.target.name] === false) {
       this.setState({
         [e.target.name]: true
@@ -207,7 +207,7 @@ class App extends Component {
         [e.target.name]: false
       })
     }
-    console.log(e.target.name+ ': ' +e.target.value)
+    console.log('CHECKBOXES: '+e.target.name+ ': ' +e.target.value)
   }
 
   //Get the current status of the user.
@@ -249,14 +249,34 @@ class App extends Component {
     }
   }
 
+  //Search for the criteria specified by the user.
   searchCriteria = () => {
+
+    let searchArray = [];
+    let disabledBoxes = {
+      searchAge: this.state.ageBox,
+      searchLocation: this.state.locationBox,
+      searchRank: this.state.rankBox,
+      searchMode: this.state.modeBox,
+      searchWeapon: this.state.mainBox
+    }
+
+    //Go through object to find all the non-checked boxes and push them
+    //into an array.
+    for (let i in disabledBoxes) {
+      if (disabledBoxes[i] === false) { 
+        searchArray.push({ [i]: this.state[i] });
+      }
+    }
+    
+    console.log(searchArray);
     axios.post('/search-criteria', {
       status: this.state.userStatus,
-      searchAge: this.state.searchAge,
-      searchLocation: this.state.searchLocation,
-      searchRank: this.state.searchRank,
-      searchMode: this.state.searchMode,
-      searchWeapon: this.state.searchWeapon,
+      // searchAge: this.state.searchAge,
+      // searchLocation: this.state.searchLocation,
+      // searchRank: this.state.searchRank,
+      // searchMode: this.state.searchMode,
+      // searchWeapon: this.state.searchWeapon,
     })
     .then(result => {
       console.log(result);
@@ -315,7 +335,12 @@ class App extends Component {
                           locationBox={this.state.locationBox}
                           rankBox={this.state.rankBox}
                           modeBox={this.state.modeBox}
-                          mainBox={this.state.mainBox}
+                          weaponBox={this.state.weaponBox}
+                          searchAge={this.state.searchAge}
+                          searchLocation={this.state.searchLocation}
+                          searchRank={this.state.searchRank}
+                          searchMode={this.state.searchMode}
+                          searchWeapon={this.state.searchWeapon}
                           getCriteria={this.getCriteria}
                           searchCriteria={this.searchCriteria}
                           getCriteriaCheckBox={this.getCriteriaCheckBox}/>}/>

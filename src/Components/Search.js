@@ -25,6 +25,7 @@ class Search extends Component {
 const splatoonFont = {
   fontFamily: 'paintball',
   textAlign: 'center',
+  marginTop: '10px',
 }
 
 export default Search;

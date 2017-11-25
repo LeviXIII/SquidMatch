@@ -102,10 +102,10 @@ class AccountInfo extends Component {
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10}>
                         <FormControl componentClass="select" placeholder="Turf War"
-                                    name="userMode" 
+                                    name="userMode" value={this.props.userMode}
                                     onChange={e => this.props.getAccountInfo(e)}>
                             <option value="Turf War">Turf War</option>
-                            <option value="Ranked">Ranked</option>
+                            <option value="League">League</option>
                             <option value="Salmon Run">Salmon Run</option>
                         </FormControl>
                     </Col>
@@ -113,11 +113,11 @@ class AccountInfo extends Component {
 
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={3} sm={2}>
-                        Main
+                        Weapon
                     </Col>
                     <Col xs={9} sm={10} md={10} lg={10} >
                         <FormControl componentClass="select" placeholder="select"
-                                    name="userMain" value={this.props.userMain}
+                                    name="userWeapon" value={this.props.userMain}
                                     onChange={e => this.props.getAccountInfo(e)}>
                             <option value="Shooters">Shooters</option>
                             <option value="Rollers">Rollers</option>
