@@ -48,6 +48,7 @@ class App extends Component {
       showPasswordField: false,
       showCreateButton: false,
       showUpdatePage: false,
+      showResultsPage: false,
     }
   
   }
@@ -215,6 +216,8 @@ class App extends Component {
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
+      showUpdatePage: false,
+      showResultsPage: false,
 
     });
   }
@@ -321,8 +324,9 @@ class App extends Component {
       searchArray: searchArray
     })
     .then(result => {
-      this.setState({ 
-        searchResults: result.data.result
+      this.setState({
+        searchResults: result.data.result,
+        showResultsPage: true,
       });
     })
     .catch(error => {
@@ -423,6 +427,7 @@ class App extends Component {
           <Results isLoggedIn={this.state.isLoggedIn}
                   searchResults={this.state.searchResults}
                   username={this.state.username}
+                  showResultsPage={this.state.showResultsPage}
                   verifyToken={this.verifyToken}/>}/>
       </div>
     );

@@ -21,6 +21,7 @@ class SiteHeader extends Component {
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav style={navItemStyle}>
+                            <NavItem><Link to="/home">Home</Link></NavItem>
                             <NavItem><Link to="/choose-criteria">Find Squad</Link></NavItem>
                             <NavItem>Chat</NavItem>
                             <NavItem>Friend List</NavItem>
