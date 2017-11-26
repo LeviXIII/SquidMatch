@@ -9,41 +9,27 @@ import '../index.css';
 import squidIcon from '../Images/squidIcon.png';
 import passwordIcon from '../Images/passwordIcon.png';
 
-class AccountInfo extends Component {
+class UpdateInfo extends Component {
 
     render() {
 
-        if (this.props.isLoggedIn) {
-            return <Redirect to="/home" />
-        }
+        this.props.verifyToken();
 
-        if (!this.props.accountRedirect) {
+        if (!this.props.isLoggedIn) {
             return <Redirect to="/" />
         }
 
+        if(this.props.showUpdatePage) {
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1>
-            <Form onSubmit={(e) => {this.props.updateAccount(e)}} horizontal className="container-fluid">
-                {!this.props.canUpdate &&
-                <FormGroup controlId="formHorizontalEmail">
-                    <Col componentClass={ControlLabel} xs={2}>
-                        Email
-                    </Col>
-                    <Col xs={10} sm={10} md={10} lg={10} >
-                        <FormControl value={this.props.userEmail}
-                                    type="email" placeholder="email@mail.com" name="userEmail"
-                                    onChange={e => this.props.getAccountInfo(e)} />
-                    </Col>
-                </FormGroup>
-                }
-
+            <Form onSubmit={this.props.updateUser} horizontal className="container-fluid">
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={2}>
                         NS_ID
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
-                        <FormControl type="text" placeholder="1234-5678-9012" 
+                        <FormControl type="text" placeholder={this.props.userNsid}
                                     name="userNsid" value={this.props.userNsid}
                                     onChange={e => this.props.getAccountInfo(e)} />  
                     </Col>
@@ -54,7 +40,7 @@ class AccountInfo extends Component {
                         Age
                     </Col>
                     <Col xs={10} sm={10} md={10} lg={10} >
-                        <FormControl componentClass="select" placeholder="< 20"
+                        <FormControl componentClass="select" placeholder={this.props.userAge}
                                     name="userAge" value={this.props.userAge}
                                     onChange={e => this.props.getAccountInfo(e)}>
                             <option value="< 20">{'< '}20</option>
@@ -148,19 +134,27 @@ class AccountInfo extends Component {
                     </Col>
                 </FormGroup>
             
-                <FormGroup>
+                <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                        <Button style={loginButton} type="button"
-                                onClick={this.props.registerInfo}>
-                            Create
-                        </Button>
+                    <Link to="/home">
+                      <Button style={signupButton} type="button"
+                              onClick={this.props.updateUser}>
+                          Update
+                      </Button>
+                    </Link>
                     </Col>
                 </FormGroup>
                 <h4 style={subTitle}>{this.props.verifyMessage}</h4>
             </Form>
         </div>
         );
+      }
+      else {
+        return <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
+                <h1 style={title}>LOADING...</h1>
+              </div>
+      }
     }
 
 }
@@ -168,19 +162,19 @@ class AccountInfo extends Component {
 //Styles//
 //////////
 
-const splatoonFont = {
-    fontFamily: 'paintball',
+const loginButton = {
+  width: '150px',
+  backgroundColor: '#7aff42',
+  fontFamily: 'paintball',
 }
 
 const signupButton = {
-    width: '150px',
-    backgroundColor: '#ff43b7',
-    fontFamily: 'paintball',
+  width: '150px',
+  backgroundColor: '#ff43b7',
+  fontFamily: 'paintball',
 }
 
-const loginButton = {
-    width: '150px',
-    backgroundColor: '#7aff42',
+const splatoonFont = {
     fontFamily: 'paintball',
 }
 
@@ -190,4 +184,11 @@ const subTitle = {
     color: '#948f8f',
 }
 
-export default AccountInfo;
+const title = {
+  fontFamily: 'paintball',
+  textAlign: 'center',
+  marginTop: '10px',
+  marginBottom: '10px'
+}
+
+export default UpdateInfo;

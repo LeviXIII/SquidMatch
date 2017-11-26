@@ -4,10 +4,11 @@ import axios from 'axios';
 
 import LoginForm from './Components/LoginForm';
 import AccountInfo from './Components/AccountInfo';
+import UpdateInfo  from './Components/UpdateInfo';
 import Home from './Components/Home';
 import SiteHeader from './Components/SiteHeader';
 import ChooseCriteria from './Components/ChooseCriteria';
-import Search from './Components/Search';
+import Results from './Components/Results';
 
 import './App.css';
 
@@ -27,13 +28,14 @@ class App extends Component {
       userWeapon: 'Shooters',
       userStatus: 'Available',
       userAvatar: '',
-      searchAge: '< 20',
-      searchLocation: 'Canada',
-      searchRank: 'C',
-      searchMode: 'Turf War',
-      searchWeapon: 'Shooters',
+      searchAge: 'Any',
+      searchLocation: 'Any',
+      searchRank: 'Any',
+      searchMode: 'Any',
+      searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
+      searchResults: [],
       ageBox: false,
       locationBox: false,
       rankBox: false,
@@ -41,9 +43,11 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
+      showUpdatePage: false,
     }
   
   }
@@ -81,7 +85,6 @@ class App extends Component {
         mode: this.state.userMode,
         weapon: this.state.userWeapon,
         status: this.state.userStatus,
-        avatar: this.state.userAvatar,
     })
     .then(result => {
       localStorage.setItem('token', result.data.token);
@@ -98,6 +101,46 @@ class App extends Component {
     })
   }
 
+  //Get the current user's information.
+  getUserInfo = () => {
+    axios.get('/get-user-info/'+this.state.username)
+    .then(result => {
+      this.setState({
+        userNsid: result.data.user.nsid,
+        userAge: result.data.user.age,
+        userLocation: result.data.user.location,
+        userRank: result.data.user.rank,
+        userMode: result.data.user.mode,
+        userWeapon: result.data.user.weapon,
+        userStatus: result.data.user.status,
+        showUpdatePage: true,
+      })
+
+    })
+    .catch(error => {
+      console.log("Couldn't get your information. Try again later.");
+    })
+  }
+
+  //Update a user.
+  updateUser = () => {
+    axios.put('/update-user-info/'+this.state.username, {
+      nsid: this.state.userNsid,
+      age: this.state.userAge,
+      location: this.state.userLocation,
+      rank: this.state.userRank,
+      mode: this.state.userMode,
+      weapon: this.state.userWeapon,
+      status: this.state.userStatus,
+    })
+    .then(result => {
+      this.setState({ updateSuccess: true });
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+
   //Log the user in.
   loginForm = (e) => {
     e.preventDefault();
@@ -106,17 +149,18 @@ class App extends Component {
       //Post the info to the database to check if the user exists.
       axios.post('/login', {
         username: this.state.username,
-        password: this.state.userPassword,
+        password: this.state.userPassword
       })
       .then(result => {
         if (result.data.message === undefined || null) {
           localStorage.setItem('token', result.data.token);
-          this.setState({ isLoggedIn: true });
+          this.setState({
+            isLoggedIn: true,
+          });
         }
         else {
           this.setState({
             verifyMessage: result.data.message,
-            showCreateButton: false
           });
         }
       })
@@ -124,14 +168,12 @@ class App extends Component {
         console.log(error);
         this.setState({
           verifyMessage: "Please sign up for an account.",
-          //showCreateButton: true
         });
       })
     }
     else {
       this.setState({
         verifyMessage: "Please enter a valid username or password.",
-        //showCreateButton: true
       })
     }
     
@@ -169,6 +211,7 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
@@ -178,7 +221,7 @@ class App extends Component {
 
   getUserLoginInput = (e) => {
     this.setState({ 
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value.replace(/ /g, "") //Takes spaces out.
     })
   }
 
@@ -217,6 +260,11 @@ class App extends Component {
     })
   }
 
+  //Controls whether the successful update alert pops up.
+  setUpdateSuccess = () => {
+    this.setState({ updateSuccess: false });
+  }
+
   //Check password length and validation.
   checkPassword = () => {
     if (this.state.verifiedPassword === this.state.userPassword &&
@@ -251,7 +299,6 @@ class App extends Component {
 
   //Search for the criteria specified by the user.
   searchCriteria = () => {
-
     let searchArray = [];
     let disabledBoxes = {
       searchAge: this.state.ageBox,
@@ -269,20 +316,19 @@ class App extends Component {
       }
     }
 
-    console.log(searchArray);
-
     axios.post('/search-criteria', {
       status: this.state.userStatus,
       searchArray: searchArray
-      // searchAge: this.state.searchAge,
-      // searchLocation: this.state.searchLocation,
-      // searchRank: this.state.searchRank,
-      // searchMode: this.state.searchMode,
-      // searchWeapon: this.state.searchWeapon
     })
     .then(result => {
-      console.log(result);
+      this.setState({ 
+        searchResults: result.data.result
+      });
     })
+    .catch(error => {
+      console.log("Couldn't perform search.");
+    })
+
   }
 
   render() {
@@ -292,8 +338,9 @@ class App extends Component {
         <SiteHeader username={this.state.username}
                     userStatus={this.state.userStatus}
                     userLogout={this.userLogout}
-                    getStatus={this.getStatus}
-      />}
+                    getUserInfo={this.getUserInfo}
+                    getStatus={this.getStatus}/>}
+
         <Route path="/" exact render={() => 
           <LoginForm  username={this.state.username}
                       userPassword={this.state.userPassword}
@@ -324,12 +371,36 @@ class App extends Component {
                         isLoggedIn={this.state.isLoggedIn}
                         accountRedirect={this.state.accountRedirect}
                         verifyMessage={this.state.verifyMessage}
+                        updateUser={this.updateUser}
                         registerInfo={this.registerInfo}
                         getAccountInfo={this.getAccountInfo}/>}/>
-                        {/* showCreateButton={this.state.showCreateButton} */}
+
+        <Route path="/update-info" exact render={() =>
+          <UpdateInfo  username={this.state.username}
+                        userPassword={this.state.userPassword}
+                        userEmail={this.state.userEmail}
+                        userNsid={this.state.userNsid}
+                        userAge={this.state.userAge}
+                        userLocation={this.state.userLocation}
+                        userRank={this.state.userRank}
+                        userMode={this.state.userMode}
+                        userWeapon={this.state.userWeapon}
+                        userStatus={this.state.userStatus}
+                        userAvatar={this.state.userAvatar}
+                        isLoggedIn={this.state.isLoggedIn}
+                        accountRedirect={this.state.accountRedirect}
+                        verifyMessage={this.state.verifyMessage}
+                        showUpdatePage={this.state.showUpdatePage}
+                        updateUser={this.updateUser}
+                        registerInfo={this.registerInfo}
+                        getAccountInfo={this.getAccountInfo}
+                        verifyToken={this.verifyToken}/>}/>
 
         <Route path="/home" exact render={() =>
-          <Home isLoggedIn={this.state.isLoggedIn}/>}/>
+          <Home isLoggedIn={this.state.isLoggedIn}
+                updateSuccess={this.state.updateSuccess}
+                setUpdateSuccess={this.setUpdateSuccess}
+                verifyToken={this.verifyToken}/>}/>
         
         <Route path="/choose-criteria" exact render={() =>
           <ChooseCriteria isLoggedIn={this.state.isLoggedIn}
@@ -345,10 +416,14 @@ class App extends Component {
                           searchWeapon={this.state.searchWeapon}
                           getCriteria={this.getCriteria}
                           searchCriteria={this.searchCriteria}
-                          getCriteriaCheckBox={this.getCriteriaCheckBox}/>}/>
+                          getCriteriaCheckBox={this.getCriteriaCheckBox}
+                          verifyToken={this.verifyToken}/>}/>
         
-        <Route path="/search" exact render={() =>
-          <Search isLoggedIn={this.state.isLoggedIn}/>}/>
+        <Route path="/results" exact render={() =>
+          <Results isLoggedIn={this.state.isLoggedIn}
+                  searchResults={this.state.searchResults}
+                  username={this.state.username}
+                  verifyToken={this.verifyToken}/>}/>
       </div>
     );
   }

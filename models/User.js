@@ -14,7 +14,6 @@ const UserSchema = new Schema({
     mode: { type: String, required: true },
     weapon: { type: String, required: true },
     status: { type: String, required: true },
-    avatar: { type: String }
 })
 
 //Create the model.

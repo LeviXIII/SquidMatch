@@ -42,6 +42,36 @@ connection.on('open', () => {
 //   })
 // }
 
+app.get('/get-user-info/:username', (req, res) => {
+  User.findOne({ username: req.params.username })
+  .then(result => {
+    res.status(200).json({ user: result });
+  })
+  .catch(error => {
+    console.log(error);
+  })
+})
+
+app.put('/update-user-info/:username', (req, res) => {
+  User.findOneAndUpdate(
+    { username: req.params.username },
+    { nsid: req.body.nsid,
+      age: req.body.age,
+      location: req.body.location,
+      rank: req.body.rank,
+      mode: req.body.mode,
+      weapon: req.body.weapon,
+      status: req.body.status,
+    },
+    {})
+    .then(result => {
+      res.status(200).json({ oldInfo: result });
+    })
+    .catch(error => {
+      console.log(error);
+    })
+})
+
 app.post('/verify-token', (req, res) => {
   jwt.verify(req.body.currentToken, secretKey, (err, token) => {
     if (err) {
@@ -146,7 +176,6 @@ app.post('/register', (req, res) => {
         mode: req.body.mode,
         weapon: req.body.weapon,
         status: req.body.status,
-        avatar: req.body.avatar,
       })
       .save()
       .then(result => {

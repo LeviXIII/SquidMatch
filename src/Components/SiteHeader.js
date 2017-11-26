@@ -42,8 +42,9 @@ class SiteHeader extends Component {
                                     Appear Offline
                                 </MenuItem>
                                 <MenuItem divider />
-                                <MenuItem eventKey={1.4}>
-                                    <Link to="/account-info">
+                                <MenuItem eventKey={1.4}
+                                    onSelect={this.props.getUserInfo}>
+                                    <Link to="/update-info">
                                         Update Account
                                     </Link>
                                 </MenuItem>
@@ -74,12 +75,6 @@ const subTitle = {
     paddingLeft: '2%',
     paddingRight: '2%',
 }
-
-// const titleHeading = {
-//     marginTop: '0%',
-//     paddingTop: '3%',
-//     marginBottom: '1%',
-// }
 
 const statusLabel = {
     fontSize: '1em',

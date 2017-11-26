@@ -6,6 +6,8 @@ import { Link, Redirect } from 'react-router-dom';
 class ChooseCriteria extends Component {
   render() {
     
+    this.props.verifyToken();
+
     if (this.props.isLoggedIn === false) {
       return <Redirect to="/" />
     }
@@ -136,7 +138,7 @@ class ChooseCriteria extends Component {
         <FormGroup>
             <Col xs={8} sm={4} md={4} lg={4} 
                 xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                <Link to="/search">
+                <Link to="/results">
                     <Button style={loginButton} type="button"
                             onClick={this.props.searchCriteria}>
                         Search
