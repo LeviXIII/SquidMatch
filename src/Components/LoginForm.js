@@ -26,7 +26,7 @@ class LoginForm extends Component {
             <h1 className="siteTitle">Squid Match</h1>
             <h3 style={subTitle}>Find active players to play with</h3>
             <Form onSubmit={(e) => this.props.loginForm(e)} horizontal className="container-fluid">
-                <FormGroup controlId="formHorizontalEmail">
+                <FormGroup controlId="formHorizontalUsername">
                     <Col xs={12} sm={10} md={10} lg={10} 
                         smOffset={1} mdOffset={1} lgOffset={1}>
                     <InputGroup>

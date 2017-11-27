@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { ChatFeed, Message } from 'react-chat-ui'
 import axios from 'axios';
 
 import LoginForm from './Components/LoginForm';
@@ -9,6 +10,7 @@ import Home from './Components/Home';
 import SiteHeader from './Components/SiteHeader';
 import ChooseCriteria from './Components/ChooseCriteria';
 import Results from './Components/Results';
+import Chat from './Components/Chat';
 
 import './App.css';
 
@@ -17,6 +19,7 @@ class App extends Component {
     super();
 
     this.state = {
+      userId: '',
       username: '',
       userPassword: '',
       userEmail: '',
@@ -35,7 +38,7 @@ class App extends Component {
       searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
-      searchResults: [],
+      typedMessage: '',
       ageBox: false,
       locationBox: false,
       rankBox: false,
@@ -43,14 +46,24 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      isTyping: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
       showUpdatePage: false,
       showResultsPage: false,
+      showModal: false,
+      showDeleteModal: false,
+      userToRemove: {},
+      searchResults: [],
+      groupMembers: [],
+      messages : [
+        // (new Message({ id: 1, message: "I'm the recipient! (The person you're talking to)" })), // Gray bubble
+        // (new Message({ id: 0, message: "I'm you -- the blue bubble!" })) // Blue bubble
+      ],
+    
     }
-  
   }
 
   //Check if the token is still valid.
@@ -90,6 +103,7 @@ class App extends Component {
     .then(result => {
       localStorage.setItem('token', result.data.token);
       this.setState({
+        userId: result.data.id,
         isLoggedIn: true,
         accountRedirect: false,
       });
@@ -157,6 +171,7 @@ class App extends Component {
           localStorage.setItem('token', result.data.token);
           this.setState({
             isLoggedIn: true,
+            userId: result.data.id
           });
         }
         else {
@@ -187,6 +202,7 @@ class App extends Component {
   userLogout = () => {
     localStorage.removeItem('token');
     this.setState({
+      userId: '',
       username: '',
       userPassword: '',
       userEmail: '',
@@ -205,6 +221,7 @@ class App extends Component {
       searchWeapon: 'Shooters',
       verifiedPassword: '',
       verifyMessage: '',
+      typedMessage: '',
       ageBox: false,
       locationBox: false,
       rankBox: false,
@@ -212,12 +229,18 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      isTyping: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
       showCreateButton: false,
       showUpdatePage: false,
       showResultsPage: false,
+      showModal: false,
+      showDeleteModal: false,
+      userToRemove: {},
+      searchResults: [],
+      groupMembers: [],
 
     });
   }
@@ -263,9 +286,57 @@ class App extends Component {
     })
   }
 
+  //Get the message to display from the user's chat input.
+  getTypedMessage = (e) => {
+    this.setState({ 
+      [e.target.name]: e.target.value
+    })
+  }
+
+  getGroupMembers = (group) => {
+    this.setState({
+      groupMembers: group,
+    })
+  }
+
+  sendMessage = () => {
+    let copy = this.state.messages;
+    copy.push(new Message({id: 0, 
+                          senderName: this.state.username,
+                          message: this.state.typedMessage}));
+    this.setState({ messages: copy })
+  }
+
   //Controls whether the successful update alert pops up.
   setUpdateSuccess = () => {
     this.setState({ updateSuccess: false });
+  }
+
+  setShowModal = () => {
+    if (!this.state.showModal) {
+      this.setState({ showModal: true })
+    }
+    else {
+      this.setState({ showModal: false })
+    }
+  }
+
+  setShowDeleteModal = () => {
+    if (!this.state.showDeleteModal) {
+      this.setState({ showDeleteModal: true })
+    }
+    else {
+      this.setState({ showDeleteModal: false })
+    }
+    
+  }
+
+  deleteOption = (user) => {
+    console.log(user);
+    this.setState({
+      showDeleteModal: true,
+      userToRemove: user
+    })
   }
 
   //Check password length and validation.
@@ -343,7 +414,8 @@ class App extends Component {
                     userStatus={this.state.userStatus}
                     userLogout={this.userLogout}
                     getUserInfo={this.getUserInfo}
-                    getStatus={this.getStatus}/>}
+                    getStatus={this.getStatus}/>
+      }
 
         <Route path="/" exact render={() => 
           <LoginForm  username={this.state.username}
@@ -428,6 +500,23 @@ class App extends Component {
                   searchResults={this.state.searchResults}
                   username={this.state.username}
                   showResultsPage={this.state.showResultsPage}
+                  showModal={this.state.showModal}
+                  showDeleteModal={this.state.showDeleteModal}
+                  userToRemove={this.state.userToRemove}
+                  setShowModal={this.setShowModal}
+                  deleteOption={this.deleteOption}
+                  setShowDeleteModal={this.setShowDeleteModal}
+                  getGroupMembers={this.getGroupMembers}
+                  verifyToken={this.verifyToken}/>}/>
+        
+        <Route path="/chat" exact render={() =>
+          <Chat isLoggedIn={this.state.isLoggedIn}
+                  isTyping={this.state.isTyping}
+                  messages={this.state.messages}
+                  typedMessage={this.state.typedMessage}
+                  username={this.state.username}
+                  sendMessage={this.sendMessage}
+                  getTypedMessage={this.getTypedMessage}
                   verifyToken={this.verifyToken}/>}/>
       </div>
     );

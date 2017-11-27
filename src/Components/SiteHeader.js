@@ -23,7 +23,7 @@ class SiteHeader extends Component {
                         <Nav style={navItemStyle}>
                             <NavItem><Link to="/home">Home</Link></NavItem>
                             <NavItem><Link to="/choose-criteria">Find Squad</Link></NavItem>
-                            <NavItem>Chat</NavItem>
+                            <NavItem><Link to="/chat">Chat</Link></NavItem>
                             <NavItem>Friend List</NavItem>
                             <NavItem>Calendar</NavItem>
                         </Nav>

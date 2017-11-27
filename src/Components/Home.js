@@ -14,14 +14,14 @@ class Home extends Component {
       return <Redirect to="/" />
     }
 
-    
+    //Update status after updating your status.
     let updateAlert = <Alert style={adjustWindow} bsStyle="success" onDismiss={this.props.setUpdateSuccess}>
                         <h3 style={notice}>Account Updated!</h3>
                         <Button block={true} 
                                 onClick={this.props.setUpdateSuccess}>OK</Button>
                       </Alert>
 
-    return(
+    return (
       <div>
         {this.props.updateSuccess ? (
           <div className="container">
@@ -86,8 +86,6 @@ const listTitle = {
 const title = {
   fontFamily: 'paintball',
   textAlign: 'center',
-  //marginTop: '10px',
-  //marginBottom: '10px'
 }
 
 const paraFont ={

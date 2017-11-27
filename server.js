@@ -129,7 +129,10 @@ app.post('/login', (req, res) => {
 
           let token = jwt.sign(payload, secretKey);
           
-          return res.json({ token: token });    
+          return res.json({
+            token: token,
+            id: result._id
+          });    
       }
       else {
           //If match is false, then we should deny their login
@@ -187,8 +190,11 @@ app.post('/register', (req, res) => {
         }
 
         let token = jwt.sign(payload, secretKey);
-
-        res.status(200).json({ token: token });
+        console.log(result);
+        res.status(200).json({
+          token: token,
+          id: result._id
+        });
       })
       .catch(error => {
         res.status(500).json({
