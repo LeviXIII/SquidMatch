@@ -19,6 +19,10 @@ class UpdateInfo extends Component {
             return <Redirect to="/" />
         }
 
+        if (this.props.updateSuccess) {
+            return <Redirect to="/home" />
+        }
+
         if(this.props.showUpdatePage) {
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
@@ -136,11 +140,19 @@ class UpdateInfo extends Component {
             
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                    <Link to="/home">
-                      <Button style={signupButton} type="button"
+                        xsOffset={2} smOffset={1} mdOffset={4} lgOffset={4}>
+                    {/* <Link to="/home"> */}
+                      <Button style={loginButton} type="button"
                               onClick={this.props.updateUser}>
                           Update
+                      </Button>
+                    {/* </Link> */}
+                    </Col>
+                    <Col xs={8} sm={4} md={4} lg={4} 
+                        xsOffset={2} smOffset={1} mdOffset={4} lgOffset={4}>
+                    <Link to="/home">
+                      <Button style={signupButton} type="button">
+                          Cancel
                       </Button>
                     </Link>
                     </Col>

@@ -22,10 +22,10 @@ class SiteHeader extends Component {
                     <Navbar.Collapse>
                         <Nav style={navItemStyle}>
                             <NavItem><Link to="/home">Home</Link></NavItem>
+                            <NavItem><Link to="/news">News</Link></NavItem>
                             <NavItem><Link to="/choose-criteria">Find Squad</Link></NavItem>
                             <NavItem><Link to="/chat">Chat</Link></NavItem>
                             <NavItem>Friend List</NavItem>
-                            <NavItem>Calendar</NavItem>
                         </Nav>
                         <Nav style={navItemStyle} pullRight>
                         <Navbar.Text style={statusLabel}>Status: {this.props.userStatus}</Navbar.Text>

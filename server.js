@@ -3,10 +3,12 @@ const app = express();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Twit = require('twit');
 
 const User = require('./models/User');
 
 const config = require('./config.js');
+const T = new Twit(config);
 
 const PORT = 8080; 
 const MONGO_CONNECTION_STRING = 'mongodb://localhost:27017/data/db';
@@ -25,6 +27,15 @@ connection.on('open', () => {
     console.log('Server now listening on port: '+PORT+' =D');
   })
 })
+
+//Search Twitter feed for news on Splatoon 2 from Nintendo.
+app.get('/get-tweets', (req, res) => {
+  T.get('statuses/user_timeline', { screen_name: '@SplatoonSwitch', count: 20, exclude_replies: true } , function(err, data, res) {
+    console.log(data);
+  })
+  res.status(200);
+})
+
 
 //Function to authorize the user to enter the rest of the site.
 // function authorize(req, res, next) {
@@ -63,6 +74,19 @@ app.put('/update-user-info/:username', (req, res) => {
       weapon: req.body.weapon,
       status: req.body.status,
     },
+    {})
+    .then(result => {
+      res.status(200).json({ oldInfo: result });
+    })
+    .catch(error => {
+      console.log(error);
+    })
+})
+
+app.put('/update-status/:username', (req, res) => {
+  User.findOneAndUpdate(
+    { username: req.params.username },
+    { status: req.body.status },
     {})
     .then(result => {
       res.status(200).json({ oldInfo: result });

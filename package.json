@@ -16,7 +16,8 @@
     "react-dom": "^16.1.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.17",
-    "react-textgradient": "^0.0.2"
+    "react-textgradient": "^0.0.2",
+    "twit": "^2.2.9"
   },
   "proxy": "http://localhost:8080",
   "scripts": {

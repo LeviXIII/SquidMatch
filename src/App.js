@@ -8,6 +8,7 @@ import AccountInfo from './Components/AccountInfo';
 import UpdateInfo  from './Components/UpdateInfo';
 import Home from './Components/Home';
 import SiteHeader from './Components/SiteHeader';
+import News from './Components/News';
 import ChooseCriteria from './Components/ChooseCriteria';
 import Results from './Components/Results';
 import Chat from './Components/Chat';
@@ -139,21 +140,26 @@ class App extends Component {
 
   //Update a user.
   updateUser = () => {
-    axios.put('/update-user-info/'+this.state.username, {
-      nsid: this.state.userNsid,
-      age: this.state.userAge,
-      location: this.state.userLocation,
-      rank: this.state.userRank,
-      mode: this.state.userMode,
-      weapon: this.state.userWeapon,
-      status: this.state.userStatus,
-    })
-    .then(result => {
-      this.setState({ updateSuccess: true });
-    })
-    .catch(error => {
-      console.log(error);
-    })
+    if (/^\d{4}[\s-]\d{4}[\s-]\d{4}$/g.test(this.state.userNsid) === true) {
+      axios.put('/update-user-info/'+this.state.username, {
+        nsid: this.state.userNsid,
+        age: this.state.userAge,
+        location: this.state.userLocation,
+        rank: this.state.userRank,
+        mode: this.state.userMode,
+        weapon: this.state.userWeapon,
+        status: this.state.userStatus,
+      })
+      .then(result => {
+        this.setState({ updateSuccess: true });
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
+    else {
+      this.setState({ verifyMessage: "Check your NSID format" })
+    }
   }
 
   //Log the user in.
@@ -171,7 +177,8 @@ class App extends Component {
           localStorage.setItem('token', result.data.token);
           this.setState({
             isLoggedIn: true,
-            userId: result.data.id
+            userId: result.data.id,
+            verifyMessage: '',
           });
         }
         else {
@@ -281,8 +288,17 @@ class App extends Component {
 
   //Get the current status of the user.
   getStatus = (status) => {
-    this.setState({
-      userStatus: status
+
+    //Set the status in the database.
+    axios.put('/update-status/'+this.state.username, {
+      status: status,
+    })
+    .then(result => {
+      this.setState({ userStatus: status });
+
+    })
+    .catch(error => {
+      console.log(error);
     })
   }
 
@@ -309,7 +325,10 @@ class App extends Component {
 
   //Controls whether the successful update alert pops up.
   setUpdateSuccess = () => {
-    this.setState({ updateSuccess: false });
+    this.setState({ 
+      updateSuccess: false,
+      verifyMessage: '',
+    });
   }
 
   setShowModal = () => {
@@ -467,6 +486,7 @@ class App extends Component {
                         accountRedirect={this.state.accountRedirect}
                         verifyMessage={this.state.verifyMessage}
                         showUpdatePage={this.state.showUpdatePage}
+                        updateSuccess={this.state.updateSuccess}
                         updateUser={this.updateUser}
                         registerInfo={this.registerInfo}
                         getAccountInfo={this.getAccountInfo}
@@ -511,13 +531,17 @@ class App extends Component {
         
         <Route path="/chat" exact render={() =>
           <Chat isLoggedIn={this.state.isLoggedIn}
-                  isTyping={this.state.isTyping}
-                  messages={this.state.messages}
-                  typedMessage={this.state.typedMessage}
-                  username={this.state.username}
-                  sendMessage={this.sendMessage}
-                  getTypedMessage={this.getTypedMessage}
-                  verifyToken={this.verifyToken}/>}/>
+                isTyping={this.state.isTyping}
+                messages={this.state.messages}
+                typedMessage={this.state.typedMessage}
+                username={this.state.username}
+                sendMessage={this.sendMessage}
+                getTypedMessage={this.getTypedMessage}
+                verifyToken={this.verifyToken}/>}/>
+
+        <Route path="/news" exact render={() =>
+          <News isLoggedIn={this.state.isLoggedIn}    
+                verifyToken={this.verifyToken}/>}/>
       </div>
     );
   }

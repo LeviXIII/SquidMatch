@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Alert, Button } from 'react-bootstrap';
 
-import SiteHeader from './SiteHeader';
-import ChooseCriteria from './ChooseCriteria';
-
 class Home extends Component {
   render() {
 
