@@ -14,6 +14,10 @@ const UserSchema = new Schema({
     mode: { type: String, required: true },
     weapon: { type: String, required: true },
     status: { type: String, required: true },
+    notification: { 
+        notify: { type: Number, unique: true, required: true },
+        from: { type: String, unique: true, required: false }
+    }
 })
 
 //Create the model.

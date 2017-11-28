@@ -30,10 +30,18 @@ connection.on('open', () => {
 
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
 app.get('/get-tweets', (req, res) => {
-  T.get('statuses/user_timeline', { screen_name: '@SplatoonSwitch', count: 20, exclude_replies: true } , function(err, data, res) {
-    console.log(data);
+  T.get('statuses/user_timeline', { screen_name: '@SplatoonSwitch', count: 20, exclude_replies: true } , function(err, data, resp) {
+    if (!err) {
+      res.status(200).json({
+        dataChunk: data
+      });
+    }
+    else {
+      console.log(err);
+    }
+    
   })
-  res.status(200);
+  
 })
 
 
@@ -96,6 +104,30 @@ app.put('/update-status/:username', (req, res) => {
     })
 })
 
+app.put('/send-invites/:groupMembers', (req, res) => {
+  //Build the query object in order to search for array of people.
+  //searchQuery = {}
+  //searchQuery['$and'] = []; //Start an $and query
+  console.log(req.params.groupMembers);
+  // for (let i=0; i < req.params.groupMembers.length; i++) {
+  //   searchQuery["$and"].push({ username: req.params.groupMembers[i].username});
+  // }
+  
+
+  User.findOneAndUpdate(
+    { username: req.params.groupMembers }, //searchQuery,
+    { notification: { notify: req.body.notify, from: req.body.from } },
+    {}
+  )
+  .then(oldData => {
+    console.log(oldData)
+    res.status(200).json({ result: oldData })
+  })
+  .catch(error => {
+    console.log(error);
+  })
+})
+
 app.post('/verify-token', (req, res) => {
   jwt.verify(req.body.currentToken, secretKey, (err, token) => {
     if (err) {
@@ -155,7 +187,8 @@ app.post('/login', (req, res) => {
           
           return res.json({
             token: token,
-            id: result._id
+            notify: result.notification.notify,
+            from: result.notification.from
           });    
       }
       else {
@@ -203,6 +236,7 @@ app.post('/register', (req, res) => {
         mode: req.body.mode,
         weapon: req.body.weapon,
         status: req.body.status,
+        notification: { notify: 0, from: '' }
       })
       .save()
       .then(result => {
@@ -285,7 +319,6 @@ app.post('/search-criteria', (req, res) => {
     }
   }
 
-  console.log(searchQuery);
   //Find the users that match the given criteria.
   User.find(searchQuery)
   .then(result => {

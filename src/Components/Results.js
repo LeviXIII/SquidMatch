@@ -5,12 +5,18 @@ import { ListGroup, ListGroupItem, InputGroup,
 import Avatar from 'react-avatar';
 import axios from 'axios';
 
-let displaySquad = [];
-let squad = [];
-let counter = 0;
+let displaySquad;
+let squad;
+let counter;
 
 class Results extends Component {
   
+  componentWillMount() {
+    displaySquad = [];
+    squad = [];
+    counter = 0;
+  }
+
   //Add user to current list of members.
   addToSquad = (user) => { 
 
@@ -61,7 +67,7 @@ class Results extends Component {
     }
     
     this.props.setShowModal();
-  }
+  } //end addToSquad
 
   removeMember = () => {
     for (let i=0; i < squad.length; i++) {
@@ -87,7 +93,7 @@ class Results extends Component {
     }
 
     //Run through array of results put them into a list.
-    if (this.props.searchResults === undefined) {
+    if (this.props.searchResults.length === 0) {
       displayResults = <h3 style={noResults}>
                         Sorry, there were no results
                       </h3>

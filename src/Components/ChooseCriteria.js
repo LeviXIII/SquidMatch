@@ -135,6 +135,7 @@ class ChooseCriteria extends Component {
             </Col>
         </FormGroup>
 
+        {this.props.userStatus === "Available" ? (
         <FormGroup>
             <Col xs={8} sm={4} md={4} lg={4} 
                 xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
@@ -146,6 +147,9 @@ class ChooseCriteria extends Component {
                 </Link>
             </Col>
         </FormGroup>
+        ) : (
+            <h4 style={statusMessage}>Please set you status to "Available"</h4>
+        )}
       </Form>
   </div>
     );
@@ -182,5 +186,11 @@ const subTitle = {
   fontFamily: 'overpass',
   textAlign: 'center',
 }
+
+const statusMessage = {
+    fontFamily: 'paintball',
+    textAlign: 'center',
+    color: '#948f8f',
+  }
 
 export default ChooseCriteria;

@@ -143,7 +143,6 @@ class AccountInfo extends Component {
                             <option value="Available">Available</option>
                             <option value="Unavailable">Unavailable</option>
                             <option value="Appear Offline">Appear Offline</option>
-                            <option value="Offline">Offline</option>
                         </FormControl>
                     </Col>
                 </FormGroup>

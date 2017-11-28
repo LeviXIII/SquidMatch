@@ -7,9 +7,21 @@ import Avatar from 'react-avatar';
 class SiteHeader extends Component {
     
     render() {
+
+        //Vars to note if a user has a notification.
+        let changeShape = true;
+        let statusSymbol = '';
+        
+        if (this.props.userNote === 1) {
+            changeShape = false;
+            statusSymbol = '!!  ';                        
+        }
+
         let avatarSymbol = <Avatar name={this.props.username} size={35}
-                            round={true} style={splatoonFont}
+                            round={changeShape} style={splatoonFont}
                             maxInitial={2}/>
+
+        
 
         return(
             <Jumbotron className="container">
@@ -28,18 +40,18 @@ class SiteHeader extends Component {
                             <NavItem>Friend List</NavItem>
                         </Nav>
                         <Nav style={navItemStyle} pullRight>
-                        <Navbar.Text style={statusLabel}>Status: {this.props.userStatus}</Navbar.Text>
+                        <Navbar.Text style={statusLabel}>{statusSymbol}Status: {this.props.userStatus}</Navbar.Text>
                             <NavDropdown eventKey={1} title={avatarSymbol} id="nav-dropdown">
                                 <MenuItem eventKey={1.1} 
-                                        onSelect={(status) => this.props.getStatus("Available")}>
+                                        onSelect={(status) => this.props.setStatus("Available")}>
                                     Available
                                 </MenuItem>
                                 <MenuItem eventKey={1.2}
-                                        onSelect={(status) => this.props.getStatus("Unavailable")}>
+                                        onSelect={(status) => this.props.setStatus("Unavailable")}>
                                     Unavailable
                                 </MenuItem>
                                 <MenuItem eventKey={1.3}
-                                        onSelect={(status) => this.props.getStatus("Appear Offline")}>
+                                        onSelect={(status) => this.props.setStatus("Appear Offline")}>
                                     Appear Offline
                                 </MenuItem>
                                 <MenuItem divider />

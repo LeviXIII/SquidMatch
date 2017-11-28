@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { ChatFeed, Message } from 'react-chat-ui'
 import axios from 'axios';
 
 import LoginForm from './Components/LoginForm';
@@ -32,6 +31,8 @@ class App extends Component {
       userWeapon: 'Shooters',
       userStatus: 'Available',
       userAvatar: '',
+      userNote: 0,
+      userFrom: '',
       searchAge: 'Any',
       searchLocation: 'Any',
       searchRank: 'Any',
@@ -39,7 +40,6 @@ class App extends Component {
       searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
-      typedMessage: '',
       ageBox: false,
       locationBox: false,
       rankBox: false,
@@ -47,7 +47,6 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
-      isTyping: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
@@ -59,11 +58,6 @@ class App extends Component {
       userToRemove: {},
       searchResults: [],
       groupMembers: [],
-      messages : [
-        // (new Message({ id: 1, message: "I'm the recipient! (The person you're talking to)" })), // Gray bubble
-        // (new Message({ id: 0, message: "I'm you -- the blue bubble!" })) // Blue bubble
-      ],
-    
     }
   }
 
@@ -177,7 +171,8 @@ class App extends Component {
           localStorage.setItem('token', result.data.token);
           this.setState({
             isLoggedIn: true,
-            userId: result.data.id,
+            userNote: result.data.notify,
+            userFrom: result.data.from,
             verifyMessage: '',
           });
         }
@@ -219,8 +214,10 @@ class App extends Component {
       userRank: 'C',
       userMode: 'Turf War',
       userWeapon: 'Shooters',
-      userStatus: 'Available',
+      userStatus: 'Offline',
       userAvatar: '',
+      userNote: 0,
+      userFrom: '',
       searchAge: '< 20',
       searchLocation: 'Canada',
       searchRank: 'C',
@@ -228,7 +225,6 @@ class App extends Component {
       searchWeapon: 'Shooters',
       verifiedPassword: '',
       verifyMessage: '',
-      typedMessage: '',
       ageBox: false,
       locationBox: false,
       rankBox: false,
@@ -236,7 +232,6 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
-      isTyping: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
@@ -286,9 +281,33 @@ class App extends Component {
     console.log('CHECKBOXES: '+e.target.name+ ': ' +e.target.value)
   }
 
-  //Get the current status of the user.
-  getStatus = (status) => {
+  getGroupMembers = (group) => {
 
+    //Send everyone in the group a notification of being invited
+    //Then set their status to Unavailable until they respond to
+    //notification.
+    console.log('CLIENT SIDE: ',group[0]);
+    axios.put('/send-invites/' + group[0].username, 
+              { notify: 1, from: this.state.username })
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.log(error);
+    })
+
+    this.setState({
+      groupMembers: group,
+      showModal: false,     //Close the window after leaving Results window.
+    })
+
+    //Update Status in database.
+    this.setStatus("Unavailable");
+    
+  }
+
+  //Set the current status of the user.
+  setStatus = (status) => {
     //Set the status in the database.
     axios.put('/update-status/'+this.state.username, {
       status: status,
@@ -301,28 +320,7 @@ class App extends Component {
       console.log(error);
     })
   }
-
-  //Get the message to display from the user's chat input.
-  getTypedMessage = (e) => {
-    this.setState({ 
-      [e.target.name]: e.target.value
-    })
-  }
-
-  getGroupMembers = (group) => {
-    this.setState({
-      groupMembers: group,
-    })
-  }
-
-  sendMessage = () => {
-    let copy = this.state.messages;
-    copy.push(new Message({id: 0, 
-                          senderName: this.state.username,
-                          message: this.state.typedMessage}));
-    this.setState({ messages: copy })
-  }
-
+  
   //Controls whether the successful update alert pops up.
   setUpdateSuccess = () => {
     this.setState({ 
@@ -392,6 +390,7 @@ class App extends Component {
 
   //Search for the criteria specified by the user.
   searchCriteria = () => {
+    
     let searchArray = [];
     let disabledBoxes = {
       searchAge: this.state.ageBox,
@@ -410,7 +409,7 @@ class App extends Component {
     }
 
     axios.post('/search-criteria', {
-      status: this.state.userStatus,
+      status: "Available",
       searchArray: searchArray
     })
     .then(result => {
@@ -431,9 +430,11 @@ class App extends Component {
       {this.state.isLoggedIn &&
         <SiteHeader username={this.state.username}
                     userStatus={this.state.userStatus}
+                    userNote={this.state.userNote}
+                    userFrom={this.state.userFrom}
                     userLogout={this.userLogout}
                     getUserInfo={this.getUserInfo}
-                    getStatus={this.getStatus}/>
+                    setStatus={this.setStatus}/>
       }
 
         <Route path="/" exact render={() => 
@@ -505,6 +506,7 @@ class App extends Component {
                           rankBox={this.state.rankBox}
                           modeBox={this.state.modeBox}
                           weaponBox={this.state.weaponBox}
+                          userStatus={this.state.userStatus}
                           searchAge={this.state.searchAge}
                           searchLocation={this.state.searchLocation}
                           searchRank={this.state.searchRank}
@@ -531,12 +533,7 @@ class App extends Component {
         
         <Route path="/chat" exact render={() =>
           <Chat isLoggedIn={this.state.isLoggedIn}
-                isTyping={this.state.isTyping}
-                messages={this.state.messages}
-                typedMessage={this.state.typedMessage}
                 username={this.state.username}
-                sendMessage={this.sendMessage}
-                getTypedMessage={this.getTypedMessage}
                 verifyToken={this.verifyToken}/>}/>
 
         <Route path="/news" exact render={() =>

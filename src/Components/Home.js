@@ -37,11 +37,27 @@ class Home extends Component {
           <ol>
             <li style={listTitle}>Set Your Status</li>
             <p style={paraFont}>
-              Your status must be set to "Available" for people to
-              actively find you. Your status can be found on the
-              right-hand side of the header. Once you have your
-              squad, set your status to "Unavailable" so you can not
-              be searched for by others.
+              Your status must be set to "Available" to be searchable.
+              Your status can be found on the right-hand side of the banner.
+              If you receive an invitation to chat you can select it at any
+              time. You can only receive one invitation at a time, so make
+              sure to stay fresh. You will be unavailable while chatting.
+            </p>
+            <li style={listTitle}>Find A Squad</li>
+            <p style={paraFont}>
+              Click the "Find Squad" link in the banner to start the search.
+            </p>
+            <li style={listTitle}>Choose Your Criteria</li>
+            <p style={paraFont}>
+              You choose who you want to play with. If you can't find anybody,
+              try to be less specific. If you want to find anybody, either
+              check all the the checkboxes to "Off", or make all the fields "Any".
+            </p>
+            <li style={listTitle}>Results</li>
+            <p style={paraFont}>
+              You can select up to 3 other people to invite to a squad. Once you
+              are finished, push the "Chat" button to invite the selected members
+              to chat. If no one replies, stay fresh and try searching again.
             </p>
           </ol>
         </div>
