@@ -11,9 +11,11 @@ const User = require('./models/User');
 const config = require('./config.js');
 const T = new Twit(config);
 
-const PORT = 8080; 
+const PORT = process.env.PORT || 8080; 
 const MONGO_CONNECTION_STRING = 'mongodb://localhost:27017/data/db';
 
+//Serve out all the static react files
+app.use(express.static(__dirname+'/build'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 mongoose.connect(MONGO_CONNECTION_STRING);
@@ -49,7 +51,7 @@ connection.on('open', () => {
     })
 
     //Event listener for adding a new room to the list.
-    socket.on('addRoom', room=>{
+    socket.on('addRoom', room => {
       rooms.push(room.roomname) //Add room to array.
       socket.leave(socket.room) //Remove user from previous room.
       socket.join(room.roomname) //Join new room.
@@ -94,6 +96,12 @@ connection.on('open', () => {
     })
   })
 
+})
+
+//This is to enuser that no matter what endpoint the user attempts to go to, they
+//receive our minified react files.
+app.get('*', (req, res) => {
+  res.sendFile(__dirname+'/build/index.html');
 })
 
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
@@ -433,6 +441,7 @@ app.put('/logout/:username', (req, res) => {
     console.log('logged out', result);
   })
   .catch(error => {
+    res.status(500);
     console.log("Couldn't log out.", error);
   })
 })

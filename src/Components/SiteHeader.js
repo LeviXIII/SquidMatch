@@ -19,8 +19,6 @@ class SiteHeader extends Component {
                             round={changeShape} style={splatoonFont}
                             maxInitial={2}/>
 
-        
-
         return(
             <div>
             <Jumbotron className="container">

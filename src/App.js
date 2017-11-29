@@ -82,7 +82,7 @@ class App extends Component {
 
     socket.on('client:joinchat', (username, data) => {
       this.setState({
-        messages: [{ sender: 'Admin', message: 'Welcome to '+data+'!'}]
+        messages: [{ sender: 'Admin', message: 'Welcome to Squad Chat!'}]
       })
       console.log(username, data);
     })
@@ -93,30 +93,29 @@ class App extends Component {
       })
     })
 
-    socket.on('client:channelerror', (user,data)=>{
+    socket.on('client:channelerror', (user, data)=>{
       this.setState({
-        messages: this.state.messages.concat({author:user, message:data})
+        messages: this.state.messages.concat({ sender: user, message: data })
       })
     })
 
     socket.on('updaterooms', (rooms, current_room)=>{
       console.log(rooms, current_room)
-      this.setState(prevState=>prevState.channels = rooms)
+      this.setState(prevState => prevState.channels = rooms)
     })
 
     socket.on('databaseCheck', () => {
-      console.log('testing')
-      axios.get('/get-invite-note/'+this.state.username)
+      axios.get('/get-invite-note/' + this.state.username)
       .then(result => {
         this.setState({ 
           userNote: result.data.notify,
           userFrom: result.data.from,
         })
-
+        //Show the chat invitation pop-up
         this.setShowChatModal();
       })
       .catch(error => {
-
+        console.log(error);
       })
     })
 
@@ -148,10 +147,10 @@ class App extends Component {
 
   submitUser = () => {
     const user = this.refs.username.value
-    socket.emit('client:newuser', { author: this.refs.username.value, message: 'has connected to the chat!' })
+    socket.emit('client:newuser', { sender: this.state.username, message: 'has connected to the chat!' })
     this.setState({
       loggedIn: true,
-      user: this.refs.username.value !== '' ? this.refs.username.value : 'BrainStation Student'
+      //user: this.state.username
     })
   }
 
@@ -577,11 +576,11 @@ class App extends Component {
       userFrom: '',
       showChatModal: false,
     });
-
   }
 
   joinChat = () => {
-    <Chat />
+    this.setState({ showChatModal: false });
+    // <Chat />
   }
 
   componentWillUnmount() {
@@ -618,7 +617,6 @@ class App extends Component {
           </Link>
           </Modal.Footer>
         </Modal>
-
         </div>
       }
 
