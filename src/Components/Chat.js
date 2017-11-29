@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { Form, FormGroup, Col, FormControl } from 'react-bootstrap';
 
 class Chat extends Component {
 
@@ -11,12 +12,31 @@ class Chat extends Component {
       return <Redirect to="/" />
     }
 
+    const messages = this.props.messages.map((value, i)=>{
+      return(
+          <div key={i}>
+              <span style={splatoonFont}>
+                {value.sender}
+              </span>
+              <span style={overpass}> : {value.message}</span>
+          </div>
+      )
+    })
+
     return (
       <div>
-        <div style={autoScroll} className="divBorder col-xs-10 col-sm-10 col-md-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 formAccountSettings">
-        <h1>Chat</h1>
-        <h3>Members:</h3>
-        
+        <div className="divBorder col-xs-10 col-sm-10 col-md-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 formAccountSettings">
+          <h1 style={title}>Squad Chat</h1>
+          {messages}
+          <Form onSubmit={e => this.props.submitChat(e)} horizontal className="container-fluid">
+                <FormGroup controlId="formHorizontalUsername">
+                    <Col xs={12} sm={12} md={12} lg={12} >
+                        <FormControl value={this.props.messageText} autoComplete="off"
+                                    type="text" placeholder="Type your message"
+                                    onChange={e => this.props.getMessageText(e)} />
+                    </Col>
+                </FormGroup>
+          </Form>
         </div>
       </div>
     );
@@ -27,43 +47,26 @@ class Chat extends Component {
 //Styles//
 //////////
 
-const autoScroll = {
-  height: '100%',
-  overflow: 'auto'
+const splatoonFont = {
+    fontFamily: 'paintball',
+    fontSize: '125%'
 }
-
-const inputPosition = {
-  position: 'absolute',
-  bottom: '5px'
-}
-// const adjustWindow = {
-//   marginTop: '10%',
-// }
-
-// const notice = {
-//   fontFamily: 'paintball',
-//   textAlign: 'center',
-// }
-
-// const splatoonFont = {
-//     fontFamily: 'paintball',
-// }
 
 // const subTitle = {
 //   fontFamily: 'paintball',
 //   color: '#948f8f',
 // }
 
-// const listTitle = {
-//   fontFamily: 'paintball',
-//   fontSize: '150%',
-//   color: '#948f8f',
-// }
+const title = {
+  fontFamily: 'paintball',
+  color: '#948f8f',
+  textAlign: 'center',
+}
 
-// const title = {
-//   fontFamily: 'paintball',
-//   textAlign: 'center',
-// }
+const overpass = {
+  fontFamily: 'overpass',
+  fontSize: '120%'
+}
 
 // const paraFont ={
 //   fontFamily: 'overpass',

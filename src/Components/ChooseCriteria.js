@@ -26,7 +26,7 @@ class ChooseCriteria extends Component {
                 Age
             </Col>
             <Col xs={8} sm={8} md={8} lg={8} >
-                <FormControl componentClass="select" placeholder="< 20"
+                <FormControl componentClass="select" placeholder="Any"
                             name="searchAge" value={this.props.searchAge}
                             disabled={this.props.ageBox}
                             onChange={e => this.props.getCriteria(e)}>
@@ -49,7 +49,7 @@ class ChooseCriteria extends Component {
                 Location
             </Col>
             <Col xs={7} sm={8} md={8} lg={8} >
-                <FormControl componentClass="select" placeholder="Canada"
+                <FormControl componentClass="select" placeholder="Any"
                             name="searchLocation" value={this.props.searchLocation}
                             disabled={this.props.locationBox}
                             onChange={e => this.props.getCriteria(e)}>
@@ -71,7 +71,7 @@ class ChooseCriteria extends Component {
                 Rank
             </Col>
             <Col xs={7} sm={8} md={8} lg={8}>
-                <FormControl componentClass="select" placeholder="C"
+                <FormControl componentClass="select" placeholder="Any"
                             name="searchRank" value={this.props.searchRank}
                             disabled={this.props.rankBox}
                             onChange={e => this.props.getCriteria(e)}>
@@ -94,7 +94,7 @@ class ChooseCriteria extends Component {
                 Mode
             </Col>
             <Col xs={7} sm={8} md={8} lg={8}>
-                <FormControl componentClass="select" placeholder="Turf War"
+                <FormControl componentClass="select" placeholder="Any"
                             name="searchMode" value={this.props.searchMode}
                             disabled={this.props.modeBox}
                             onChange={e => this.props.getCriteria(e)}>
@@ -115,7 +115,7 @@ class ChooseCriteria extends Component {
                 Weapon
             </Col>
             <Col xs={7} sm={8} md={8} lg={8} >
-                <FormControl componentClass="select" placeholder="select"
+                <FormControl componentClass="select" placeholder="Any"
                             name="searchWeapon" value={this.props.searchWeapon}
                             disabled={this.props.weaponBox}
                             onChange={e => this.props.getCriteria(e)}>

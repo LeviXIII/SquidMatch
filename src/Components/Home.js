@@ -59,6 +59,14 @@ class Home extends Component {
               are finished, push the "Chat" button to invite the selected members
               to chat. If no one replies, stay fresh and try searching again.
             </p>
+            <li style={listTitle}>Invitations</li>
+            <p style={paraFont}>
+              An alert will pop up if you receive an invitation to chat. You can
+              decline it or accept (Booyah!). If you click away from the window,
+              you can always see if you have an invite by checking your avatar.
+              A square means you have an invite waiting and you can access it via
+              the drop-down menu on the avatar.
+            </p>
           </ol>
         </div>
       </div>

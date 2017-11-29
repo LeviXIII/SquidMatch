@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Twit = require('twit');
+//const server = require('http').Server(app);
 
 const User = require('./models/User');
 
@@ -20,12 +21,79 @@ mongoose.connect(MONGO_CONNECTION_STRING);
 const connection = mongoose.connection;
 const secretKey = config.token_secretKey;
 
+const usernames = {};
+const rooms = ['Lobby'];
+
 //Open connections
 connection.on('open', () => {
   console.log('Now connected to Mongo ^_^');
-  app.listen(PORT, () => {
+  
+  const server = app.listen(PORT, () => {
     console.log('Server now listening on port: '+PORT+' =D');
   })
+  
+  const io = require('socket.io').listen(server);
+
+  //Open connection for sockets
+  io.sockets.on('connection', socket => {
+    
+    //Listen for when a user joins the chat.
+    socket.on('addUser', (username) => {
+      socket.username = username; //Assign username to the socket.
+      socket.room = 'Lobby';      //Assign default room to socket.
+      socket.join('Lobby');        //Connect the socket to the default room.
+
+      socket.emit('client:joinchat', username, socket.room) //Tell the client that they're connected to the chat.
+      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER',username+' has joined the channel.') //Notify all other sockets that a new user has joined.
+      socket.emit('updaterooms', rooms, `${socket.room}`) //Update the room list for the client.
+    })
+
+    //Event listener for adding a new room to the list.
+    socket.on('addRoom', room=>{
+      rooms.push(room.roomname) //Add room to array.
+      socket.leave(socket.room) //Remove user from previous room.
+      socket.join(room.roomname) //Join new room.
+      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room') //Broadcast that user left old room.
+      socket.room = room.roomname //Assign the room name to the socket.
+      socket.emit('client:joinchat', socket.username, room.roomname) //Emit to client that they've joined new room.
+      io.emit('updaterooms', rooms, room.roomname) //Emit to all sockets that there is a new room on the list.
+    })
+
+    //Event listener for switching rooms
+    socket.on('switchRoom', newroom=>{
+      if(newroom !== socket.room){
+        socket.leave(socket.room)
+        socket.join(newroom)
+        socket.emit('client:joinchat', 'SERVER', newroom)
+        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room')
+        socket.room = newroom
+        socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room')
+        socket.emit('updaterooms', rooms, newroom)
+      }
+      else{
+        socket.emit('client:channelerror', 'SERVER', 'You\'re already in that channel!')
+      }
+    })
+    
+    //Event for Sending Messages. Sends the info of the user and message 
+    //when sending a message.
+    socket.on('sendchat', data => {
+      io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+    })
+    
+    //Event Listener for disconnecting.
+    socket.on('disconnect', ()=>{
+      delete usernames[socket.username] //Remove the username from our table of usernames.
+      io.sockets.emit('updateusers', usernames) //Update the userlist on each of our clients.
+      socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected') //Broadcast that a user has disconnected from the chat.
+      socket.leave(socket.room) //Remove the socket from the room that they were in last.
+    })
+
+    socket.on('check-invites', () => {
+      io.emit('databaseCheck');
+    })
+  })
+
 })
 
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
@@ -60,6 +128,19 @@ app.get('/get-tweets', (req, res) => {
 //       next();
 //   })
 // }
+
+app.get('/get-invite-note/:username', (req, res) => {
+  User.findOne({ username: req.params.username })
+  .then(result => {
+    res.json({
+      notify: result.notification.notify,
+      from: result.notification.from
+    });
+  })
+  .catch(err => {
+    console.log('No', error);
+  })
+})
 
 app.get('/get-user-info/:username', (req, res) => {
   User.findOne({ username: req.params.username })
@@ -104,28 +185,23 @@ app.put('/update-status/:username', (req, res) => {
     })
 })
 
-app.put('/send-invites/:groupMembers', (req, res) => {
-  //Build the query object in order to search for array of people.
-  //searchQuery = {}
-  //searchQuery['$and'] = []; //Start an $and query
-  console.log(req.params.groupMembers);
-  // for (let i=0; i < req.params.groupMembers.length; i++) {
-  //   searchQuery["$and"].push({ username: req.params.groupMembers[i].username});
-  // }
+app.put('/send-invites', (req, res) => {
   
-
-  User.findOneAndUpdate(
-    { username: req.params.groupMembers }, //searchQuery,
-    { notification: { notify: req.body.notify, from: req.body.from } },
-    {}
-  )
+  //Allows for the database to update each field in the array of
+  //group members and then return one promise afterwards.
+  Promise.all(req.body.group.map((value, i) => {
+    return (
+      User.findOneAndUpdate(
+        { username: value.username },
+        { notification: { notify: req.body.notify, from: req.body.from }},
+        {}
+      )
+    )
+  }))
   .then(oldData => {
-    console.log(oldData)
-    res.status(200).json({ result: oldData })
+    res.json({});
   })
-  .catch(error => {
-    console.log(error);
-  })
+
 })
 
 app.post('/verify-token', (req, res) => {
@@ -188,7 +264,8 @@ app.post('/login', (req, res) => {
           return res.json({
             token: token,
             notify: result.notification.notify,
-            from: result.notification.from
+            from: result.notification.from,
+            status: "Available"
           });    
       }
       else {
@@ -201,6 +278,18 @@ app.post('/login', (req, res) => {
   })
   .catch(error => {
     res.json({ message: "We couldn't find your account. Please register or try again." });
+    console.log(error);
+  })
+
+  User.findOneAndUpdate(
+    { username: username },
+    { status: "Available" },
+    {}
+  )
+  .then(result => {
+    res.status(200);
+  })
+  .catch(error => {
     console.log(error);
   })
   
@@ -236,7 +325,7 @@ app.post('/register', (req, res) => {
         mode: req.body.mode,
         weapon: req.body.weapon,
         status: req.body.status,
-        notification: { notify: 0, from: '' }
+        notification: { notify: false, from: '' }
       })
       .save()
       .then(result => {
@@ -270,7 +359,8 @@ app.post('/search-criteria', (req, res) => {
   //Build the query object in order to search dynamically.
   searchQuery = {}
   searchQuery['$and'] = []; //Start an $and query
-  searchQuery["$and"].push({ status: req.body.status}); //Always check for status.
+  searchQuery["$and"].push({ status: req.body.status }); //Always check for status.
+  //searchQuery["$and"].push({ "notification.notify": req.body.notify });
 
   //Magic!
   //Check to see which elements in the array match the fields required to search.
@@ -326,5 +416,41 @@ app.post('/search-criteria', (req, res) => {
   })
   .catch(error => {
     console.log("Couldn't get the users you searched for." + error);
+  })
+})
+
+app.put('/logout/:username', (req, res) => {
+  User.findOneAndUpdate(
+    { username: req.params.username },
+    { status: req.body.status,
+      "notification.notify": req.body.notify,
+      "notification.from": req.body.from,
+    },
+    {}
+  )
+  .then(result => {
+    res.status(200);
+    console.log('logged out', result);
+  })
+  .catch(error => {
+    console.log("Couldn't log out.", error);
+  })
+})
+
+app.put('/decline-invite/:username', (req, res) => {
+  User.findOneAndUpdate(
+    { username: req.params.username },
+    { status: req.body.status,
+      "notification.notify": req.body.notify,
+      "notification.from": req.body.from
+    },
+    {}
+  )
+  .then(result => {
+    res.status(200);
+    console.log('declined invite', result);
+  })
+  .catch(error => {
+    console.log("Couldn't decline invite.", error);
   })
 })

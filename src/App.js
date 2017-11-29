@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, Link } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
+import io from 'socket.io-client';
 
 import LoginForm from './Components/LoginForm';
 import AccountInfo from './Components/AccountInfo';
@@ -13,6 +15,8 @@ import Results from './Components/Results';
 import Chat from './Components/Chat';
 
 import './App.css';
+
+const socket = io('http://localhost:8080');
 
 class App extends Component {
   constructor() {
@@ -31,7 +35,7 @@ class App extends Component {
       userWeapon: 'Shooters',
       userStatus: 'Available',
       userAvatar: '',
-      userNote: 0,
+      userNote: false,
       userFrom: '',
       searchAge: 'Any',
       searchLocation: 'Any',
@@ -55,10 +59,107 @@ class App extends Component {
       showResultsPage: false,
       showModal: false,
       showDeleteModal: false,
+      showChatModal: false,
       userToRemove: {},
+      socket: {},
       searchResults: [],
       groupMembers: [],
+      messages: [
+        { sender: '', message: ''}
+      ],
     }
+  }
+
+  componentDidMount() {
+    socket.connect();
+    
+    socket.on('connect', () => {
+      this.setState({
+        socket: socket
+      })
+      socket.emit('addUser', this.state.username);
+    })
+
+    socket.on('client:joinchat', (username, data) => {
+      this.setState({
+        messages: [{ sender: 'Admin', message: 'Welcome to '+data+'!'}]
+      })
+      console.log(username, data);
+    })
+
+    socket.on('updatechat', (username, data) => {
+      this.setState({
+        messages: this.state.messages.concat({ sender: username, message: data })
+      })
+    })
+
+    socket.on('client:channelerror', (user,data)=>{
+      this.setState({
+        messages: this.state.messages.concat({author:user, message:data})
+      })
+    })
+
+    socket.on('updaterooms', (rooms, current_room)=>{
+      console.log(rooms, current_room)
+      this.setState(prevState=>prevState.channels = rooms)
+    })
+
+    socket.on('databaseCheck', () => {
+      console.log('testing')
+      axios.get('/get-invite-note/'+this.state.username)
+      .then(result => {
+        this.setState({ 
+          userNote: result.data.notify,
+          userFrom: result.data.from,
+        })
+
+        this.setShowChatModal();
+      })
+      .catch(error => {
+
+      })
+    })
+
+  } //end componentDidMount
+
+  getMessageText = e => {
+    this.setState({ 
+      messageText: e.target.value
+    })
+  }
+
+  submitChat = e => {
+    e.preventDefault();
+    const dataToSend = {
+      author: this.state.username,
+      message: this.state.messageText
+    }
+    socket.emit('sendchat', this.state.messageText)
+
+    //Clear the messageText box.
+    this.setState({
+      messageText: '',
+    })
+  }
+
+  changeRoom = val =>{
+    socket.emit('switchRoom', val)
+  }
+
+  submitUser = () => {
+    const user = this.refs.username.value
+    socket.emit('client:newuser', { author: this.refs.username.value, message: 'has connected to the chat!' })
+    this.setState({
+      loggedIn: true,
+      user: this.refs.username.value !== '' ? this.refs.username.value : 'BrainStation Student'
+    })
+  }
+
+  addRoom = e =>{
+    e.preventDefault()
+    console.log('Trying to add room', this.refs.addRoom.value)
+    socket.emit('addroom', {roomname: this.refs.addRoom.value})
+    this.refs.addRoom.value = ''
   }
 
   //Check if the token is still valid.
@@ -167,12 +268,14 @@ class App extends Component {
         password: this.state.userPassword
       })
       .then(result => {
+        console.log(result)
         if (result.data.message === undefined || null) {
           localStorage.setItem('token', result.data.token);
           this.setState({
             isLoggedIn: true,
             userNote: result.data.notify,
             userFrom: result.data.from,
+            userStatus: result.data.status,
             verifyMessage: '',
           });
         }
@@ -216,13 +319,13 @@ class App extends Component {
       userWeapon: 'Shooters',
       userStatus: 'Offline',
       userAvatar: '',
-      userNote: 0,
+      userNote: false,
       userFrom: '',
-      searchAge: '< 20',
-      searchLocation: 'Canada',
-      searchRank: 'C',
-      searchMode: 'Turf War',
-      searchWeapon: 'Shooters',
+      searchAge: 'Any',
+      searchLocation: 'Any',
+      searchRank: 'Any',
+      searchMode: 'Any',
+      searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
       ageBox: false,
@@ -240,11 +343,28 @@ class App extends Component {
       showResultsPage: false,
       showModal: false,
       showDeleteModal: false,
+      showChatModal: false,
       userToRemove: {},
+      socket: {},
       searchResults: [],
       groupMembers: [],
-
+      messages: [
+        { sender: '', message: ''}
+      ],
     });
+
+    axios.put('/logout/'+this.state.username, {
+      status: "Offline",
+      notify: false,
+      from: ''
+    })
+    .then(result => {
+      console.log("Logged out");
+    })
+    .catch(error => {
+      console.log("Couldn't log out");
+    })
+
   }
 
   getUserLoginInput = (e) => {
@@ -282,15 +402,17 @@ class App extends Component {
   }
 
   getGroupMembers = (group) => {
-
     //Send everyone in the group a notification of being invited
     //Then set their status to Unavailable until they respond to
     //notification.
-    console.log('CLIENT SIDE: ',group[0]);
-    axios.put('/send-invites/' + group[0].username, 
-              { notify: 1, from: this.state.username })
+    
+    axios.put('/send-invites', 
+              { notify: true, 
+                from: this.state.username,
+                group: group
+              })
     .then(result => {
-      console.log(result);
+      socket.emit('check-invites'); //Triggers event to tell others of invite.
     })
     .catch(error => {
       console.log(error);
@@ -345,7 +467,6 @@ class App extends Component {
     else {
       this.setState({ showDeleteModal: false })
     }
-    
   }
 
   deleteOption = (user) => {
@@ -410,6 +531,7 @@ class App extends Component {
 
     axios.post('/search-criteria', {
       status: "Available",
+      notify: false,           
       searchArray: searchArray
     })
     .then(result => {
@@ -424,17 +546,80 @@ class App extends Component {
 
   }
 
+  setShowChatModal = () => {
+    //Won't display modal if you are inviting people.
+    if (this.state.userFrom === this.state.username || 
+          this.state.userFrom === '' || this.state.showChatModal) {
+      this.setState({ showChatModal: false });
+    }
+    else {
+      this.setState({ showChatModal: true });
+    }
+  }
+
+  declineInvite = () => {
+    //Change status and update notification
+    axios.put('/decline-invite/'+this.state.username, {
+      status: "Available",
+      notify: false,
+      from: '',
+    })
+    .then(result => {
+      console.log('Invitation declined', result)
+    })
+    .catch(error => {
+      console.log(error);
+    })
+
+    this.setState({
+      userStatus: "Available",
+      userNote: false,
+      userFrom: '',
+      showChatModal: false,
+    });
+
+  }
+
+  joinChat = () => {
+    <Chat />
+  }
+
+  componentWillUnmount() {
+    this.userLogout();
+  }
+
   render() {
+ 
     return (
       <div className="mainBackground">
       {this.state.isLoggedIn &&
+        <div>
         <SiteHeader username={this.state.username}
                     userStatus={this.state.userStatus}
                     userNote={this.state.userNote}
                     userFrom={this.state.userFrom}
+                    joinChat={this.state.joinChat}
+                    setShowChatModal={this.setShowChatModal}
                     userLogout={this.userLogout}
                     getUserInfo={this.getUserInfo}
                     setStatus={this.setStatus}/>
+
+        <Modal show={this.state.showChatModal} onHide={this.setShowChatModal}>
+          <Modal.Body>
+          <h3 style={confirm}>Join {this.state.userFrom}'s chat?</h3>
+          </Modal.Body>
+
+          <Modal.Footer>
+          <Button style={cancelButton}
+                  onClick={this.declineInvite}>Decline</Button>
+          <Link to="/chat">
+            <Button style={proceedButton}
+                    onClick={this.joinChat}>Booyah!</Button>
+          </Link>
+          </Modal.Footer>
+        </Modal>
+
+        </div>
       }
 
         <Route path="/" exact render={() => 
@@ -533,7 +718,10 @@ class App extends Component {
         
         <Route path="/chat" exact render={() =>
           <Chat isLoggedIn={this.state.isLoggedIn}
-                username={this.state.username}
+                messages={this.state.messages}
+                messageText={this.state.messageText}
+                getMessageText={this.getMessageText}
+                submitChat={this.submitChat}
                 verifyToken={this.verifyToken}/>}/>
 
         <Route path="/news" exact render={() =>
@@ -542,6 +730,25 @@ class App extends Component {
       </div>
     );
   }
+}
+
+//////////
+//Styles//
+//////////
+
+const cancelButton = {
+  backgroundColor: '#ff43b7',
+  fontFamily: 'paintball',
+}
+
+const proceedButton = {
+  backgroundColor: '#7aff42',
+  fontFamily: 'paintball',
+}
+
+const confirm = {
+  fontFamily: 'paintball',
+  textAlign: 'center',
 }
 
 export default App;

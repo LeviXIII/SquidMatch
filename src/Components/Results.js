@@ -52,9 +52,9 @@ class Results extends Component {
         displaySquad = <div>{squad.map((value, i) => {
           return (
             <ListGroup>
-            <ListGroupItem key={i} style={displayFont}
+            <ListGroupItem style={displayFont}
                             onClick={(user) => this.props.deleteOption(value)}>
-              <h3 style={splatoonFont}>{value.username}</h3>
+              <h3 key={i} style={splatoonFont}>{value.username}</h3>
               Age: {value.age}, &nbsp;Location: {value.location}, &nbsp;
               Rank: {value.rank}, &nbsp;&nbsp;Mode: {value.mode}, &nbsp;
               Weapon: {value.weapon}
@@ -171,7 +171,6 @@ class Results extends Component {
                     <Button style={proceedButton}
                             onClick={this.removeMember}>Remove</Button>
                   </Modal.Footer>
-
                 </Modal>
 
               {displayResults}

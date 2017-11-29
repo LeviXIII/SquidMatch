@@ -15,7 +15,7 @@ const UserSchema = new Schema({
     weapon: { type: String, required: true },
     status: { type: String, required: true },
     notification: { 
-        notify: { type: Number, unique: true, required: true },
+        notify: { type: Boolean, unique: true, required: true },
         from: { type: String, unique: true, required: false }
     }
 })

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Jumbotron, Nav, Navbar, NavItem,
-        MenuItem, NavDropdown } from 'react-bootstrap';
+        MenuItem, NavDropdown, Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar';
 
@@ -10,11 +10,9 @@ class SiteHeader extends Component {
 
         //Vars to note if a user has a notification.
         let changeShape = true;
-        let statusSymbol = '';
         
-        if (this.props.userNote === 1) {
+        if (this.props.userNote === true) {
             changeShape = false;
-            statusSymbol = '!!  ';                        
         }
 
         let avatarSymbol = <Avatar name={this.props.username} size={35}
@@ -24,6 +22,7 @@ class SiteHeader extends Component {
         
 
         return(
+            <div>
             <Jumbotron className="container">
                 <h1 className="siteTitle">Squid Match</h1>
                 <p style={subTitle}>Find active players to play with in Splatoon 2</p>
@@ -40,7 +39,7 @@ class SiteHeader extends Component {
                             <NavItem>Friend List</NavItem>
                         </Nav>
                         <Nav style={navItemStyle} pullRight>
-                        <Navbar.Text style={statusLabel}>{statusSymbol}Status: {this.props.userStatus}</Navbar.Text>
+                        <Navbar.Text style={statusLabel}>Status: {this.props.userStatus}</Navbar.Text>
                             <NavDropdown eventKey={1} title={avatarSymbol} id="nav-dropdown">
                                 <MenuItem eventKey={1.1} 
                                         onSelect={(status) => this.props.setStatus("Available")}>
@@ -61,14 +60,21 @@ class SiteHeader extends Component {
                                         Update Account
                                     </Link>
                                 </MenuItem>
+                                {this.props.userNote &&
+                                <MenuItem eventKey={1.5}
+                                        onSelect={this.props.setShowChatModal}>
+                                    Join {this.props.userFrom}'s Chat
+                                </MenuItem>
+                                }
                                 <MenuItem divider />
-                                <MenuItem eventkey={1.5}
+                                <MenuItem eventkey={1.6}
                                             onSelect={this.props.userLogout}>Logout</MenuItem>
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
             </Jumbotron>
+          </div>
         );
     }
 }
