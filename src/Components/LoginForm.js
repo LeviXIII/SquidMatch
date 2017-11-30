@@ -14,7 +14,7 @@ class LoginForm extends Component {
     render() {
         
         if (this.props.isLoggedIn) {
-            return <Redirect to="/home" />
+            return <Redirect to="/choose-criteria" />
         }
 
         if (this.props.accountRedirect === true) {
@@ -24,7 +24,7 @@ class LoginForm extends Component {
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formSettings">
             <h1 className="siteTitle">Squid Match</h1>
-            <h3 style={subTitle}>Find active players to play with</h3>
+            <h3 style={subTitle}>Login to find active players to play with</h3>
             <Form onSubmit={(e) => this.props.loginForm(e)} horizontal className="container-fluid">
                 <FormGroup controlId="formHorizontalUsername">
                     <Col xs={12} sm={10} md={10} lg={10} 
@@ -56,6 +56,7 @@ class LoginForm extends Component {
 
                 {/* If the person is signing up for the first time */}
                 {this.props.showPasswordField &&
+                <div>
                 <FormGroup controlId="formHorizontalPassword">
                     <Col xs={12} sm={10} md={10} lg={10} 
                         smOffset={1} mdOffset={1} lgOffset={1}>
@@ -69,9 +70,10 @@ class LoginForm extends Component {
                     </InputGroup>
                     </Col>
                 </FormGroup>
+                <h5 style={subTitle}>Passwords need to be at least 8 characters long</h5>
+                </div>
                 }
 
-                <h5 style={subTitle}>*Passwords need to be at least 8 characters long</h5>
                 <FormGroup>
                     <Col xs={8} sm={5} md={4} lg={3} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
@@ -79,18 +81,45 @@ class LoginForm extends Component {
                     </Col>
                 </FormGroup>
             
+                {!this.props.showCreateButton ? (
                 <FormGroup>
                     <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
+                        xsOffset={2} smOffset={2} mdOffset={2} lgOffset={2}>
+                    <Button style={signupButton} type="button"
+                            onClick={this.props.verifyPassword}>
+                        Sign up
+                    </Button>
+                    </Col>
+                    <Col xs={8} sm={4} md={4} lg={4} 
+                        xsOffset={2} smOffset={0} mdOffset={0} lgOffset={0}>
                     <Button style={loginButton} type="submit"
                             onChange={(e) => this.props.loginForm(e)}>
                         Login
                     </Button>
                     </Col>
                 </FormGroup>
+                ) : (
+                <FormGroup>
+                    <Col xs={8} sm={4} md={4} lg={4} 
+                        xsOffset={2} smOffset={2} mdOffset={2} lgOffset={2}>
+                    <Button style={signupButton} type="button"
+                            onClick={this.props.verifyPassword}>
+                        Create Account
+                    </Button>
+                    </Col>
+                    <Col xs={8} sm={4} md={4} lg={4} 
+                        xsOffset={2} smOffset={0} mdOffset={0} lgOffset={0}>
+                    <Button style={loginButton} type="submit"
+                            onChange={(e) => this.props.loginForm(e)}>
+                        Login
+                    </Button>
+                    </Col>
+                </FormGroup>
+                )
+                }
 
                 {/* Only show Create Account button if signup is pressed. */}
-                {!this.props.showCreateButton &&
+                {/* {!this.props.showCreateButton &&
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
@@ -100,9 +129,9 @@ class LoginForm extends Component {
                     </Button>
                     </Col>
                 </FormGroup>
-                }
+                } */}
 
-                {this.props.showCreateButton &&
+                {/* {this.props.showCreateButton &&
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
@@ -112,7 +141,7 @@ class LoginForm extends Component {
                         </Button>
                     </Col>
                 </FormGroup>
-                }
+                } */}
                 <h4 style={subTitle}>{this.props.verifyMessage}</h4>
             </Form>
         </div>
@@ -145,6 +174,7 @@ const subTitle =  {
     fontFamily: 'paintball',
     textAlign: 'center',
     color: '#948f8f',
+    marginTop: '1%'
 }
 
 export default LoginForm;

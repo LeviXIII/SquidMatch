@@ -155,12 +155,6 @@ connection.on('open', () => {
 
 })
 
-//This is to enuser that no matter what endpoint the user attempts to go to, they
-//receive our minified react files.
-// app.get('*', (req, res) => {
-//   res.sendFile(__dirname+'/build/index.html');
-// })
-
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
 app.get('/get-tweets', (req, res) => {
   T.get('statuses/user_timeline', { screen_name: '@SplatoonSwitch', count: 20, exclude_replies: true } , function(err, data, resp) {
@@ -556,4 +550,10 @@ app.put('/decline-invite/:username', (req, res) => {
   .catch(error => {
     console.log("Couldn't decline invite.", error);
   })
+})
+
+//This is to enuser that no matter what endpoint the user attempts to go to, they
+//receive our minified react files.
+app.get('*', (req, res) => {
+  res.sendFile(__dirname+'/build/index.html');
 })
