@@ -14,7 +14,6 @@ class AccountInfo extends Component {
     render() {
 
         if (this.props.isLoggedIn) {
-            this.props.userLogout();
             return <Redirect to="/home" />
         }
 

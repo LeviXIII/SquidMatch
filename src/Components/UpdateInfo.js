@@ -16,7 +16,6 @@ class UpdateInfo extends Component {
         this.props.verifyToken();
 
         if (!this.props.isLoggedIn) {
-            this.props.userLogout();
             return <Redirect to="/" />
         }
 

@@ -14,9 +14,10 @@ import ChooseCriteria from './Components/ChooseCriteria';
 import Results from './Components/Results';
 import Chat from './Components/Chat';
 
+import config from './config';
 import './App.css';
 
-const socket = io('http://localhost:8080');
+const socket = io(config.port);
 
 class App extends Component {
   constructor() {
