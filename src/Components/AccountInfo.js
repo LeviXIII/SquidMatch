@@ -14,6 +14,7 @@ class AccountInfo extends Component {
     render() {
 
         if (this.props.isLoggedIn) {
+            this.props.userLogout();
             return <Redirect to="/home" />
         }
 
@@ -23,7 +24,7 @@ class AccountInfo extends Component {
 
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
-            <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1>
+            <h1 style={subTitle}>Create Account</h1>
             <Form onSubmit={(e) => {this.props.updateAccount(e)}} horizontal className="container-fluid">
                 {!this.props.canUpdate &&
                 <FormGroup controlId="formHorizontalEmail">

@@ -16,6 +16,7 @@ class UpdateInfo extends Component {
         this.props.verifyToken();
 
         if (!this.props.isLoggedIn) {
+            this.props.userLogout();
             return <Redirect to="/" />
         }
 
@@ -26,7 +27,8 @@ class UpdateInfo extends Component {
         if(this.props.showUpdatePage) {
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
-            <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1>
+            <h1 style={subTitle}>Update Account</h1>
+            {/* <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1> */}
             <Form onSubmit={this.props.updateUser} horizontal className="container-fluid">
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={2}>
@@ -139,19 +141,19 @@ class UpdateInfo extends Component {
             
                 <FormGroup className="center-block">
                     <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={1} mdOffset={4} lgOffset={4}>
-                    {/* <Link to="/home"> */}
-                      <Button style={loginButton} type="button"
-                              onClick={this.props.updateUser}>
-                          Update
-                      </Button>
-                    {/* </Link> */}
-                    </Col>
-                    <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={1} mdOffset={4} lgOffset={4}>
+                        xsOffset={2} smOffset={1} mdOffset={2} lgOffset={2}>
                     <Link to="/home">
                       <Button style={signupButton} type="button">
                           Cancel
+                      </Button>
+                    </Link>
+                    </Col>
+                    <Col xs={8} sm={4} md={4} lg={4} 
+                        xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
+                    <Link to="/home">
+                      <Button style={loginButton} type="button"
+                              onClick={this.props.updateUser}>
+                          Update
                       </Button>
                     </Link>
                     </Col>

@@ -255,16 +255,35 @@ app.put('/update-user-info/:username', (req, res) => {
 })
 
 app.put('/update-status/:username', (req, res) => {
-  User.findOneAndUpdate(
-    { username: req.params.username },
-    { status: req.body.status },
-    {})
+  //Puts the person at the back of the queue with respect to time in 
+  //search results.
+  if (req.body.status === "Available") {
+    User.findOneAndUpdate(
+      { username: req.params.username },
+      { status: req.body.status, time: Date.now() },
+      {}
+    )
     .then(result => {
       res.status(200).json({ oldInfo: result });
     })
     .catch(error => {
       console.log(error);
     })
+  }
+  else {
+    User.findOneAndUpdate(
+      { username: req.params.username },
+      { status: req.body.status, time: Date.now() },
+      {}
+    )
+    .then(result => {
+      res.status(200).json({ oldInfo: result });
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+
 })
 
 app.put('/send-invites', (req, res) => {
@@ -364,17 +383,17 @@ app.post('/login', (req, res) => {
     console.log(error);
   })
 
-  User.findOneAndUpdate(
-    { username: username },
-    { status: "Available" },
-    {}
-  )
-  .then(result => {
-    res.status(200);
-  })
-  .catch(error => {
-    console.log(error);
-  })
+  // User.findOneAndUpdate(
+  //   { username: username },
+  //   { status: "Available" },
+  //   {}
+  // )
+  // .then(result => {
+  //   res.status(200);
+  // })
+  // .catch(error => {
+  //   console.log(error);
+  // })
   
 }); //app.post
 
@@ -389,14 +408,13 @@ app.post('/register', (req, res) => {
         return res.status(500).json(err);
     }
     
-    bcrypt.hash(req.body.password, salt, (error, hashedPassword) => {
+    bcrypt.hash(password, salt, (error, hashedPassword) => {
       if(error) {
           return res.status(500).json(error);
       }
 
       //Create a new user and add the user's hashed password
       //as well as their information into the database.
-      //Create a user
       User({
         username: req.body.username,
         password: hashedPassword,
@@ -408,6 +426,7 @@ app.post('/register', (req, res) => {
         mode: req.body.mode,
         weapon: req.body.weapon,
         status: req.body.status,
+        time: Date.now(),
         notification: { notify: false, from: '' }
       })
       .save()
@@ -420,13 +439,14 @@ app.post('/register', (req, res) => {
         }
 
         let token = jwt.sign(payload, secretKey);
-        //console.log(result);
+
         res.status(200).json({
           token: token,
           id: result._id
         });
       })
       .catch(error => {
+        console.log('here!!!', error)
         res.status(500).json({
           error: error,
           signedUp: false
@@ -440,10 +460,10 @@ app.post('/register', (req, res) => {
 app.post('/search-criteria', (req, res) => {
 
   //Build the query object in order to search dynamically.
-  searchQuery = {}
+  let searchQuery = {}
   searchQuery['$and'] = []; //Start an $and query
   searchQuery["$and"].push({ status: req.body.status }); //Always check for status.
-  //searchQuery["$and"].push({ "notification.notify": req.body.notify });
+  searchQuery["$and"].push({ "notification.notify": req.body.notify });
 
   //Magic!
   //Check to see which elements in the array match the fields required to search.
@@ -492,8 +512,8 @@ app.post('/search-criteria', (req, res) => {
     }
   }
 
-  //Find the users that match the given criteria.
-  User.find(searchQuery)
+  //Find the users that match the given criteria by time in the queue.
+  User.find(searchQuery).sort({ time: -1 })
   .then(result => {
     res.json({result: result});
   })

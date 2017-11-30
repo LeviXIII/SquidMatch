@@ -640,7 +640,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    this.userLogout();
+    //this.userLogout();
     socket.disconnect(true);
   }
 
@@ -708,6 +708,7 @@ class App extends Component {
                         isLoggedIn={this.state.isLoggedIn}
                         accountRedirect={this.state.accountRedirect}
                         verifyMessage={this.state.verifyMessage}
+                        userLogout={this.userLogout}
                         updateUser={this.updateUser}
                         registerInfo={this.registerInfo}
                         getAccountInfo={this.getAccountInfo}/>}/>
@@ -729,6 +730,7 @@ class App extends Component {
                         verifyMessage={this.state.verifyMessage}
                         showUpdatePage={this.state.showUpdatePage}
                         updateSuccess={this.state.updateSuccess}
+                        userLogout={this.userLogout}
                         updateUser={this.updateUser}
                         registerInfo={this.registerInfo}
                         getAccountInfo={this.getAccountInfo}
@@ -738,6 +740,7 @@ class App extends Component {
           <Home isLoggedIn={this.state.isLoggedIn}
                 updateSuccess={this.state.updateSuccess}
                 setUpdateSuccess={this.setUpdateSuccess}
+                userLogout={this.userLogout}
                 verifyToken={this.verifyToken}/>}/>
         
         <Route path="/choose-criteria" exact render={() =>
@@ -753,6 +756,7 @@ class App extends Component {
                           searchRank={this.state.searchRank}
                           searchMode={this.state.searchMode}
                           searchWeapon={this.state.searchWeapon}
+                          userLogout={this.userLogout}
                           getCriteria={this.getCriteria}
                           searchCriteria={this.searchCriteria}
                           getCriteriaCheckBox={this.getCriteriaCheckBox}
@@ -766,6 +770,7 @@ class App extends Component {
                   showModal={this.state.showModal}
                   showDeleteModal={this.state.showDeleteModal}
                   userToRemove={this.state.userToRemove}
+                  userLogout={this.userLogout}
                   setShowModal={this.setShowModal}
                   deleteOption={this.deleteOption}
                   setShowDeleteModal={this.setShowDeleteModal}
@@ -777,13 +782,15 @@ class App extends Component {
                 messages={this.state.messages}
                 messageText={this.state.messageText}
                 userNsid={this.state.userNsid}
+                userLogout={this.userLogout}
                 getMessageText={this.getMessageText}
                 submitChat={this.submitChat}
                 exitChat={this.exitChat}
                 verifyToken={this.verifyToken}/>}/>
 
         <Route path="/news" exact render={() =>
-          <News isLoggedIn={this.state.isLoggedIn}    
+          <News isLoggedIn={this.state.isLoggedIn}
+                userLogout={this.userLogout}  
                 verifyToken={this.verifyToken}/>}/>
       </div>
     );

@@ -13,7 +13,7 @@ class LoginForm extends Component {
 
     render() {
         
-        if (this.props.isLoggedIn === true) {
+        if (this.props.isLoggedIn) {
             return <Redirect to="/home" />
         }
 

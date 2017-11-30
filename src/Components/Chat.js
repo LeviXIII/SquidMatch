@@ -10,7 +10,8 @@ class Chat extends Component {
 
     this.props.verifyToken();
 
-    if (this.props.isLoggedIn === false) {
+    if (!this.props.isLoggedIn) {
+      this.props.userLogout();
       return <Redirect to="/" />
     }
 
