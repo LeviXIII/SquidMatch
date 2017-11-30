@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { Form, FormGroup, Col, FormControl,
           Button, InputGroup } from 'react-bootstrap';
 
 
 class Chat extends Component {
-
-  componentDidMount() {
-    
-  }
 
   render() {
 
@@ -24,15 +20,15 @@ class Chat extends Component {
               <span style={splatoonFont}>
                 {value.sender}
               </span>
-              <span style={overpass}> : {value.message}</span>
+              <span style={overpass}>{value.message}</span>
           </div>
       )
     })
-
+    console.log('Here!', this.props.messages);
     return (
       <div>
         <div className="divBorder col-xs-10 col-sm-10 col-md-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 formAccountSettings">
-          <h1 style={title}>Squad Chat</h1>
+          <h1 style={title}>Squid Chat</h1>
           {messages}
           <Form onSubmit={e => this.props.submitChat(e)} horizontal className="container-fluid">
             <FormGroup controlId="inputAndSend">
@@ -50,9 +46,16 @@ class Chat extends Component {
             </FormGroup>
           </Form>
           <div style={spacing}>
-          <Col xs={4} sm={4} md={4} lg={4}
+          <Col xs={3} sm={3} md={3} lg={3}
                   xsOffset={3} smOffset={5} mdOffset={5} lgOffset={5}>
-              <Button type="button" style={quitButton}>See Ya!</Button>
+              <Link to="/home">
+                <Button type="button" style={quitButton}
+                        onClick={this.props.exitChat}>See Ya!</Button>
+              </Link>
+          </Col>
+          <Col xs={4} sm={3} md={3} lg={3}
+                  xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
+            <p style={nsid}>NSID: {this.props.userNsid}</p>
           </Col>
           </div>
         </div>
@@ -73,10 +76,12 @@ const splatoonFont = {
 const spacing = {
   marginBottom: '6%',
 }
-// const subTitle = {
-//   fontFamily: 'paintball',
-//   color: '#948f8f',
-// }
+
+const nsid = {
+  fontFamily: 'paintball',
+  fontSize: '85%',
+  //color: '#948f8f',
+}
 
 const title = {
   fontFamily: 'paintball',

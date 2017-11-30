@@ -8,12 +8,13 @@ class SiteHeader extends Component {
     
     render() {
 
-        //Vars to note if a user has a notification.
-        let changeShape = true;
+        let changeShape = true; //Vars to note if a user has a notification.
         
         if (this.props.userNote === true) {
             changeShape = false;
         }
+
+        let link = this.props.isChatting ? '#' : '/update-info';
 
         let avatarSymbol = <Avatar name={this.props.username} size={35}
                             round={changeShape} style={splatoonFont}
@@ -30,31 +31,38 @@ class SiteHeader extends Component {
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav style={navItemStyle}>
-                            <NavItem><Link to="/home">Home</Link></NavItem>
-                            <NavItem><Link to="/news">News</Link></NavItem>
-                            <NavItem><Link to="/choose-criteria">Find Squad</Link></NavItem>
-                            <NavItem><Link to="/chat">Chat</Link></NavItem>
-                            <NavItem>Friend List</NavItem>
+                            <NavItem disabled={this.props.isChatting}>
+                                <Link to="/home">Home</Link>
+                            </NavItem>
+                            <NavItem disabled={this.props.isChatting}>
+                                <Link to="/news">News</Link>
+                            </NavItem>
+                            <NavItem disabled={this.props.isChatting}>
+                                <Link to="/choose-criteria">Find Squad</Link>
+                            </NavItem>
+                            {/* <NavItem disabled={this.props.isChatting}>
+                                <Link to="/chat">Chat</Link>
+                            </NavItem> */}
                         </Nav>
                         <Nav style={navItemStyle} pullRight>
                         <Navbar.Text style={statusLabel}>Status: {this.props.userStatus}</Navbar.Text>
                             <NavDropdown eventKey={1} title={avatarSymbol} id="nav-dropdown">
-                                <MenuItem eventKey={1.1} 
+                                <MenuItem disabled={this.props.isChatting} eventKey={1.1} 
                                         onSelect={(status) => this.props.setStatus("Available")}>
                                     Available
                                 </MenuItem>
-                                <MenuItem eventKey={1.2}
+                                <MenuItem disabled={this.props.isChatting} eventKey={1.2}
                                         onSelect={(status) => this.props.setStatus("Unavailable")}>
                                     Unavailable
                                 </MenuItem>
-                                <MenuItem eventKey={1.3}
+                                <MenuItem disabled={this.props.isChatting} eventKey={1.3}
                                         onSelect={(status) => this.props.setStatus("Appear Offline")}>
                                     Appear Offline
                                 </MenuItem>
                                 <MenuItem divider />
                                 <MenuItem eventKey={1.4}
                                     onSelect={this.props.getUserInfo}>
-                                    <Link to="/update-info">
+                                    <Link to={link}>
                                         Update Account
                                     </Link>
                                 </MenuItem>
@@ -91,6 +99,8 @@ const subTitle = {
     color: 'gainsboro',
     paddingLeft: '2%',
     paddingRight: '2%',
+    marginTop: '0%',
+    marginBottom: '0%'
 }
 
 const statusLabel = {

@@ -24,7 +24,7 @@ const connection = mongoose.connection;
 const secretKey = config.token_secretKey;
 
 const usernames = {};
-const rooms = ['Lobby'];
+const rooms = [];
 
 //Open connections
 connection.on('open', () => {
@@ -39,60 +39,117 @@ connection.on('open', () => {
   //Open connection for sockets
   io.sockets.on('connection', socket => {
     
-    //Listen for when a user joins the chat.
-    socket.on('addUser', (username) => {
-      socket.username = username; //Assign username to the socket.
-      socket.room = 'Lobby';      //Assign default room to socket.
-      socket.join('Lobby');        //Connect the socket to the default room.
+    // //Listen for when a user joins the chat.
+    // socket.on('addUser', (username) => {
+    //   socket.username = username; //Assign username to the socket.
+    //   socket.room = username;      //Assign default room to socket.
+    //   socket.join(username);        //Connect the socket to the default room.
 
-      socket.emit('client:joinchat', username, socket.room) //Tell the client that they're connected to the chat.
-      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER',username+' has joined the channel.') //Notify all other sockets that a new user has joined.
-      socket.emit('updaterooms', rooms, `${socket.room}`) //Update the room list for the client.
-    })
+    //   socket.emit('client:joinchat', username, socket.room) //Tell the client that they're connected to the chat.
+    //   socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username+' has joined the channel.') //Notify all other sockets that a new user has joined.
+    //   socket.emit('updaterooms', rooms, `${socket.room}`) //Update the room list for the client.
+    // })
 
     //Event listener for adding a new room to the list.
-    socket.on('addRoom', room => {
-      rooms.push(room.roomname) //Add room to array.
-      socket.leave(socket.room) //Remove user from previous room.
-      socket.join(room.roomname) //Join new room.
-      socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room') //Broadcast that user left old room.
-      socket.room = room.roomname //Assign the room name to the socket.
-      socket.emit('client:joinchat', socket.username, room.roomname) //Emit to client that they've joined new room.
-      io.emit('updaterooms', rooms, room.roomname) //Emit to all sockets that there is a new room on the list.
-    })
+    // socket.on('addRoom', room => {
+    //   rooms.push(room.roomname) //Add room to array.
+    //   socket.leave(socket.room) //Remove user from previous room.
+    //   socket.join(room.roomname) //Join new room.
+    //   socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room') //Broadcast that user left old room.
+    //   socket.room = room.roomname //Assign the room name to the socket.
+    //   socket.emit('client:joinchat', socket.username, room.roomname) //Emit to client that they've joined new room.
+    //   io.emit('updaterooms', rooms, room.roomname) //Emit to all sockets that there is a new room on the list.
+    // })
 
     //Event listener for switching rooms
-    socket.on('switchRoom', newroom=>{
-      if(newroom !== socket.room){
-        socket.leave(socket.room)
-        socket.join(newroom)
-        socket.emit('client:joinchat', 'SERVER', newroom)
-        socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room')
-        socket.room = newroom
-        socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room')
-        socket.emit('updaterooms', rooms, newroom)
-      }
-      else{
-        socket.emit('client:channelerror', 'SERVER', 'You\'re already in that channel!')
-      }
-    })
+    // socket.on('switchRoom', newroom=>{
+    //   if(newroom !== socket.room){
+    //     socket.leave(socket.room)
+    //     socket.join(newroom)
+    //     socket.emit('client:joinchat', 'SERVER', newroom)
+    //     socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room')
+    //     socket.room = newroom
+    //     socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room')
+    //     socket.emit('updaterooms', rooms, newroom)
+    //   }
+    //   else {
+    //     socket.emit('client:channelerror', 'SERVER', 'You\'re already in that channel!')
+    //   }
+    // })
     
     //Event for Sending Messages. Sends the info of the user and message 
     //when sending a message.
     socket.on('sendchat', data => {
-      io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+      io.sockets.in(socket.room).emit('updatechat', data);
     })
     
     //Event Listener for disconnecting.
-    socket.on('disconnect', ()=>{
-      delete usernames[socket.username] //Remove the username from our table of usernames.
-      io.sockets.emit('updateusers', usernames) //Update the userlist on each of our clients.
-      socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected') //Broadcast that a user has disconnected from the chat.
-      socket.leave(socket.room) //Remove the socket from the room that they were in last.
-    })
+    // socket.on('disconnect', ()=>{
+    //   delete usernames[socket.username] //Remove the username from our table of usernames.
+    //   io.sockets.emit('updateusers', usernames) //Update the userlist on each of our clients.
+    //   socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected') //Broadcast that a user has disconnected from the chat.
+    //   socket.leave(socket.room) //Remove the socket from the room that they were in last.
+    // })
 
+    //Used to cause an update which will send invites out to all group members.
     socket.on('check-invites', () => {
       io.emit('databaseCheck');
+    })
+
+    socket.on('make-room-for-user', (username) => {
+      //Create the initial room and enter.
+      rooms.push(username) //Add room to array.
+      socket.join(username) //Join new room.
+      socket.room = username //Assign the room name to the socket.
+
+      //Send message back to front end.
+      socket.emit('client:user-made-room', username); 
+    })
+
+    socket.on('user-declined-request', (data) => {
+      //Find the correct room to broadcast to.
+      for (let i=0; i < rooms.length; i++) {
+        if (rooms[i] === data.from) {
+          socket.room = rooms[i];
+        }
+      }
+
+      //Broadcast to room owner that you declined.
+      socket.broadcast.to(socket.room).emit('user-declined', data);
+    })
+
+    socket.on('add-user-to-room', (data) => {
+      socket.username = data.username; //Assign username to the socket.
+      for (let i=0; i < rooms.length; i++) {
+        if (rooms[i] === data.from) {
+          socket.room = rooms[i];         
+          socket.join(rooms[i]);
+
+        }
+      }
+      socket.to(socket.room).emit('updatechat', {
+        sender: 'Admin',
+        message: `${data.username} has joined the chat!`
+      });
+    })
+
+    socket.on('exit-chat', (data) => {
+
+      //Find squad leader's room.
+      for (let i=0; i < rooms.length; i++) {
+        if (rooms[i] === data.from) {
+          socket.room = rooms[i];        
+          socket.join(rooms[i]); 
+        }
+      }
+
+      //Update people in the room.
+      socket.to(socket.room).emit('updatechat', 
+        { sender: 'Admin',
+          message: `${data.username} has swum away.`
+        });
+      //Remove the socket from the room that they were in last.
+      socket.leave(socket.room); 
     })
   })
 
@@ -100,9 +157,9 @@ connection.on('open', () => {
 
 //This is to enuser that no matter what endpoint the user attempts to go to, they
 //receive our minified react files.
-app.get('*', (req, res) => {
-  res.sendFile(__dirname+'/build/index.html');
-})
+// app.get('*', (req, res) => {
+//   res.sendFile(__dirname+'/build/index.html');
+// })
 
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
 app.get('/get-tweets', (req, res) => {
@@ -157,6 +214,23 @@ app.get('/get-user-info/:username', (req, res) => {
   })
   .catch(error => {
     console.log(error);
+  })
+})
+
+app.put('/received-invite/:username', (req, res) => {
+  User.findOneAndUpdate(
+    { username: req.params.username },
+    { notification: { notify: false, from: '' }},
+    {}
+  )
+  .then(result => {
+    res.json({
+      notify: false,
+      from: '',
+    });
+  })
+  .catch(err => {
+    console.log('No', error);
   })
 })
 
@@ -271,6 +345,7 @@ app.post('/login', (req, res) => {
           
           return res.json({
             token: token,
+            nsid: result.nsid,
             notify: result.notification.notify,
             from: result.notification.from,
             status: "Available"
@@ -345,7 +420,7 @@ app.post('/register', (req, res) => {
         }
 
         let token = jwt.sign(payload, secretKey);
-        console.log(result);
+        //console.log(result);
         res.status(200).json({
           token: token,
           id: result._id
@@ -456,8 +531,7 @@ app.put('/decline-invite/:username', (req, res) => {
     {}
   )
   .then(result => {
-    res.status(200);
-    console.log('declined invite', result);
+    res.status(200).json({ result: result });
   })
   .catch(error => {
     console.log("Couldn't decline invite.", error);

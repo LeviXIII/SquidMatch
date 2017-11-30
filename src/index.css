@@ -83,7 +83,7 @@
 
 .jumbotron {
   margin-bottom: 0rem;
-  padding: 0rem 0rem 1rem 0rem;
+  padding: 0rem 0rem 0rem 0rem;
   background-image: url("../src/Images/headerBackground.png");
   background-size: cover;
   background-attachment: fixed;
@@ -120,6 +120,8 @@
   display: block;
   width: 100%;
   margin: 0%, auto;
+  margin-top: 1%;
+  margin-bottom: 0%;
   text-align: center;
   background: linear-gradient(to bottom, #ff43b7, #7aff42);
   -webkit-background-clip: text;

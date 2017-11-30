@@ -51,6 +51,7 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      isChatting: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
@@ -77,31 +78,19 @@ class App extends Component {
       this.setState({
         socket: socket
       })
-      socket.emit('addUser', this.state.username);
     })
 
-    socket.on('client:joinchat', (username, data) => {
+    // socket.on('client:joinchat', (username, data) => {
+    //   this.setState({
+    //     messages: [{ sender: 'Admin:', message: 'Welcome to Squad Chat!'}]
+    //   })
+    //   console.log(username, data);
+    // })
+
+    socket.on('updatechat', (data) => {
       this.setState({
-        messages: [{ sender: 'Admin', message: 'Welcome to Squad Chat!'}]
+        messages: this.state.messages.concat({ sender: data.sender+': ', message: data.message })
       })
-      console.log(username, data);
-    })
-
-    socket.on('updatechat', (username, data) => {
-      this.setState({
-        messages: this.state.messages.concat({ sender: username, message: data })
-      })
-    })
-
-    socket.on('client:channelerror', (user, data)=>{
-      this.setState({
-        messages: this.state.messages.concat({ sender: user, message: data })
-      })
-    })
-
-    socket.on('updaterooms', (rooms, current_room)=>{
-      console.log(rooms, current_room)
-      this.setState(prevState => prevState.channels = rooms)
     })
 
     socket.on('databaseCheck', () => {
@@ -111,13 +100,40 @@ class App extends Component {
           userNote: result.data.notify,
           userFrom: result.data.from,
         })
+
         //Show the chat invitation pop-up
         this.setShowChatModal();
       })
       .catch(error => {
         console.log(error);
       })
+      
     })
+
+    socket.on('client:user-made-room', (username) => {
+      this.setState({
+        messages: [{ sender: 'Admin: ', message: 'Welcome to Squid Chat!'}]
+      })
+    })
+
+    socket.on('user-declined', (data) => {
+      this.setState({
+        messages: this.state.messages.concat({
+          sender: 'Admin: ',
+          message: `${data.username} splatted your invite.` })
+      })
+      console.log();
+      //this.state.username;
+    })
+
+    // socket.on('client:user-joined-room', (username, from) => {
+    //   this.setState({
+    //     messages: this.state.messages.concat({ 
+    //       sender: 'Admin', 
+    //       message: `${username} joined the chat!`
+    //     })
+    //   })
+    // }) 
 
   } //end componentDidMount
 
@@ -129,11 +145,10 @@ class App extends Component {
 
   submitChat = e => {
     e.preventDefault();
-    const dataToSend = {
-      author: this.state.username,
+    socket.emit('sendchat', { 
+      sender: this.state.username,
       message: this.state.messageText
-    }
-    socket.emit('sendchat', this.state.messageText)
+    })
 
     //Clear the messageText box.
     this.setState({
@@ -141,25 +156,21 @@ class App extends Component {
     })
   }
 
-  changeRoom = val =>{
-    socket.emit('switchRoom', val)
-  }
+  // submitUser = () => {
+  //   //const user = this.state.username
+  //   socket.emit('client:newuser', { sender: this.state.username, message: 'has connected to the chat!' })
+  //   this.setState({
+  //     //loggedIn: true,
+  //     //user: this.state.username
+  //   })
+  // }
 
-  submitUser = () => {
-    const user = this.refs.username.value
-    socket.emit('client:newuser', { sender: this.state.username, message: 'has connected to the chat!' })
-    this.setState({
-      loggedIn: true,
-      //user: this.state.username
-    })
-  }
-
-  addRoom = e =>{
-    e.preventDefault()
-    console.log('Trying to add room', this.refs.addRoom.value)
-    socket.emit('addroom', {roomname: this.refs.addRoom.value})
-    this.refs.addRoom.value = ''
-  }
+  // addRoom = () => {
+  //   //e.preventDefault()
+  //   console.log('Trying to add room', this.state.username)
+  //   socket.emit('addroom', {roomname: this.state.username})
+  //   //this.refs.addRoom.value = ''
+  // }
 
   //Check if the token is still valid.
   verifyToken = () => {
@@ -272,6 +283,7 @@ class App extends Component {
           localStorage.setItem('token', result.data.token);
           this.setState({
             isLoggedIn: true,
+            userNsid: result.data.nsid,
             userNote: result.data.notify,
             userFrom: result.data.from,
             userStatus: result.data.status,
@@ -296,7 +308,7 @@ class App extends Component {
         verifyMessage: "Please enter a valid username or password.",
       })
     }
-    
+    console.log(this.state.userNsid)
     //Decide whether to show the Create Button on the Create Account
     //form.
     //this.setState({ showCreateButton: true })
@@ -334,6 +346,7 @@ class App extends Component {
       weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
+      isChatting: false,
       updateSuccess: false,
       accountRedirect: false,
       showPasswordField: false,
@@ -351,6 +364,11 @@ class App extends Component {
         { sender: '', message: ''}
       ],
     });
+
+    socket.emit('exit-chat', {
+      username: this.state.username,
+      from: this.state.userFrom
+    })
 
     axios.put('/logout/'+this.state.username, {
       status: "Offline",
@@ -417,13 +435,16 @@ class App extends Component {
       console.log(error);
     })
 
+    //Update Status in database.
+    this.setStatus("Unavailable");
+    
+    //Add a room when chat is started.
+    socket.emit('make-room-for-user', this.state.username);
     this.setState({
       groupMembers: group,
       showModal: false,     //Close the window after leaving Results window.
+      isChatting: true
     })
-
-    //Update Status in database.
-    this.setStatus("Unavailable");
     
   }
 
@@ -468,8 +489,8 @@ class App extends Component {
     }
   }
 
+  //Delete potential member from result list.
   deleteOption = (user) => {
-    console.log(user);
     this.setState({
       showDeleteModal: true,
       userToRemove: user
@@ -564,7 +585,11 @@ class App extends Component {
       from: '',
     })
     .then(result => {
-      console.log('Invitation declined', result)
+      socket.emit('user-declined-request', 
+        { username: result.data.result.username,
+          from: result.data.result.notification.from
+        });
+      
     })
     .catch(error => {
       console.log(error);
@@ -579,12 +604,44 @@ class App extends Component {
   }
 
   joinChat = () => {
-    this.setState({ showChatModal: false });
-    // <Chat />
+    axios.put('/received-invite/' + this.state.username)
+    .then(result => {
+
+    })
+    .catch(error => {
+      console.log(error);
+    })
+
+    this.setStatus("Unavailable");
+    
+    socket.emit('add-user-to-room', { 
+      username: this.state.username,
+      from: this.state.userFrom
+    });
+
+    this.setState({ 
+      userNote: false,
+      userFrom: '',
+      showChatModal: false,
+      isChatting: true,
+    })
+  }
+
+  exitChat = () => {
+    socket.emit('exit-chat', {
+      username: this.state.username,
+      from: this.state.userFrom
+    })
+    
+    this.setState({
+      isChatting: false,
+      messages: []
+    });
   }
 
   componentWillUnmount() {
     this.userLogout();
+    socket.disconnect(true);
   }
 
   render() {
@@ -598,6 +655,7 @@ class App extends Component {
                     userNote={this.state.userNote}
                     userFrom={this.state.userFrom}
                     joinChat={this.state.joinChat}
+                    isChatting={this.state.isChatting}
                     setShowChatModal={this.setShowChatModal}
                     userLogout={this.userLogout}
                     getUserInfo={this.getUserInfo}
@@ -718,8 +776,10 @@ class App extends Component {
           <Chat isLoggedIn={this.state.isLoggedIn}
                 messages={this.state.messages}
                 messageText={this.state.messageText}
+                userNsid={this.state.userNsid}
                 getMessageText={this.getMessageText}
                 submitChat={this.submitChat}
+                exitChat={this.exitChat}
                 verifyToken={this.verifyToken}/>}/>
 
         <Route path="/news" exact render={() =>

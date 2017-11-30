@@ -138,13 +138,17 @@ class Results extends Component {
               <div>
                 <Modal show={this.props.showModal} onHide={this.props.setShowModal}>
                   <Modal.Header>
-                    <Modal.Title style={warning}>Current Squad Members</Modal.Title>
+                  <Modal.Title style={subTitle}>Current Squad Members</Modal.Title>
+                    <h4 style={warning}>*Click on a member to remove from list*</h4>
                   </Modal.Header>
 
                   <Modal.Body>
                   {displaySquad}
-                  {displaySquad.length === 3 &&
-                    <h3 style={warning}>You can't have more than 3 members.</h3>
+                  {displaySquad.length === 3 ? (
+                    <h3 style={subTitle}>Start chatting!</h3>
+                  ) : (
+                    <h3 style={warning}>You may pick up to {3 - displaySquad.length} more members</h3>
+                  )
                   }
                   </Modal.Body>
 
@@ -172,7 +176,6 @@ class Results extends Component {
                             onClick={this.removeMember}>Remove</Button>
                   </Modal.Footer>
                 </Modal>
-
               {displayResults}
               </div>
             ) : (
@@ -193,6 +196,11 @@ class Results extends Component {
 //////////
 //Styles//
 //////////
+
+const subTitle = {
+  fontFamily: 'paintball',
+  textAlign: 'center',
+}
 
 const cancelButton = {
   backgroundColor: '#ff43b7',
