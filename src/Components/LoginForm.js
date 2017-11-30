@@ -103,7 +103,7 @@ class LoginForm extends Component {
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={2} mdOffset={2} lgOffset={2}>
                     <Button style={signupButton} type="button"
-                            onClick={this.props.verifyPassword}>
+                            onClick={this.props.checkPassword}>
                         Create Account
                     </Button>
                     </Col>
