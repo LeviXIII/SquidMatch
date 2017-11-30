@@ -20,7 +20,7 @@ class UpdateInfo extends Component {
         }
 
         if (this.props.updateSuccess) {
-            return <Redirect to="/home" />
+            return <Redirect to="/choose-criteria" />
         }
 
         if(this.props.showUpdatePage) {
@@ -149,12 +149,12 @@ class UpdateInfo extends Component {
                     </Col>
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
-                    <Link to="/home">
+                    {/* <Link to="/choose-criteria"> */}
                       <Button style={loginButton} type="button"
                               onClick={this.props.updateUser}>
                           Update
                       </Button>
-                    </Link>
+                    {/* </Link> */}
                     </Col>
                 </FormGroup>
                 <h4 style={subTitle}>{this.props.verifyMessage}</h4>

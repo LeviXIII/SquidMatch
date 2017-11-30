@@ -406,7 +406,7 @@ app.post('/register', (req, res) => {
       if(error) {
           return res.status(500).json(error);
       }
-
+      console.log(typeof req.body.nsid);
       //Create a new user and add the user's hashed password
       //as well as their information into the database.
       User({

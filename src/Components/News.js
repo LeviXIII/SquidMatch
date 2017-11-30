@@ -30,7 +30,7 @@ class News extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-      this.props.userLogout();
+      //this.props.userLogout();
       return <Redirect to="/" />
     }
 

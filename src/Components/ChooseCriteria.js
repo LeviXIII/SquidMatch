@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, FormControl, 
+import { Form, FormGroup, FormControl, Alert,
         Col, ControlLabel, Button, Checkbox } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
 
@@ -9,11 +9,24 @@ class ChooseCriteria extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-        this.props.userLogout();
+        //this.props.userLogout();
       return <Redirect to="/" />
     }
 
+    //Update status after updating your status.
+    let updateAlert = <Alert style={adjustWindow} bsStyle="success" onDismiss={this.props.setUpdateSuccess}>
+                        <h3 style={notice}>Account Updated!</h3>
+                        <Button block={true} 
+                        onClick={this.props.setUpdateSuccess}>OK</Button>
+                    </Alert>
+
     return (
+        <div>
+            {this.props.updateSuccess ? (
+            <div className="container">
+                {updateAlert}
+            </div>
+      ) : (
       <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
       <h1 style={Title}>Choose your Criteria</h1>
       {/* <h3 style={subTitle}>Your search criteria will be decided by the order you use.</h3> */}
@@ -153,13 +166,24 @@ class ChooseCriteria extends Component {
         )}
       </Form>
   </div>
-    );
+    )}
+</div>
+    )
   }
 }
 
 //////////
 //Styles//
 //////////
+
+const adjustWindow = {
+    marginTop: '10%',
+  }
+  
+const notice = {
+fontFamily: 'paintball',
+textAlign: 'center',
+}
 
 const splatoonFont = {
   fontFamily: 'paintball',

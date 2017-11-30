@@ -8,24 +8,11 @@ class Home extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-      this.props.userLogout();
+      //this.props.userLogout();
       return <Redirect to="/" />
     }
 
-    //Update status after updating your status.
-    let updateAlert = <Alert style={adjustWindow} bsStyle="success" onDismiss={this.props.setUpdateSuccess}>
-                        <h3 style={notice}>Account Updated!</h3>
-                        <Button block={true} 
-                                onClick={this.props.setUpdateSuccess}>OK</Button>
-                      </Alert>
-
     return (
-      <div>
-        {this.props.updateSuccess ? (
-          <div className="container">
-            {updateAlert}
-          </div>
-      ) : (
       <div className="divBorder col-xs-10 col-sm-8 col-md-8 col-xs-offset-1 col-sm-offset-2 col-md-offset-2 formAccountSettings">
         <div>
           <h1 style={title}>Welcome to Squid Match!</h1>
@@ -72,24 +59,13 @@ class Home extends Component {
           </ol>
         </div>
       </div>
-    )}
-    </div>
-    );
+    )
   }
 }
 
 //////////
 //Styles//
 //////////
-
-const adjustWindow = {
-  marginTop: '10%',
-}
-
-const notice = {
-  fontFamily: 'paintball',
-  textAlign: 'center',
-}
 
 const splatoonFont = {
     fontFamily: 'paintball',

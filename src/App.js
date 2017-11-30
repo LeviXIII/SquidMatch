@@ -246,7 +246,7 @@ class App extends Component {
 
   //Update a user.
   updateUser = () => {
-    if (/^\d{4}[\s-]\d{4}[\s-]\d{4}$/g.test(this.state.userNsid) === true) {
+    if (/\d{4}-\d{4}-\d{4}/g.test(this.state.userNsid) === true) {
       axios.put('/update-user-info/'+this.state.username, {
         nsid: this.state.userNsid,
         age: this.state.userAge,
@@ -739,8 +739,8 @@ class App extends Component {
 
         <Route path="/home" exact render={() =>
           <Home isLoggedIn={this.state.isLoggedIn}
-                updateSuccess={this.state.updateSuccess}
-                setUpdateSuccess={this.setUpdateSuccess}
+                //updateSuccess={this.state.updateSuccess}
+                //setUpdateSuccess={this.setUpdateSuccess}
                 userLogout={this.userLogout}
                 verifyToken={this.verifyToken}/>}/>
         
@@ -757,6 +757,8 @@ class App extends Component {
                           searchRank={this.state.searchRank}
                           searchMode={this.state.searchMode}
                           searchWeapon={this.state.searchWeapon}
+                          updateSuccess={this.state.updateSuccess}
+                          setUpdateSuccess={this.setUpdateSuccess}
                           userLogout={this.userLogout}
                           getCriteria={this.getCriteria}
                           searchCriteria={this.searchCriteria}
