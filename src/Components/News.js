@@ -7,22 +7,22 @@ let displayNews;
 class News extends Component {
   
   componentDidMount() {
-    // axios.get('/get-tweets')
-    // .then(result => {
-    //   displayNews = result.data.dataChunk.map((value, i) => {
-    //     return (
-    //       <div>
-    //         <h2 style={dateStyle}>{value.created_at}</h2>
-    //         <h3 style={paraFont}>{value.text}</h3>
-    //         <h1 style={divider}></h1>
-    //       </div>
-    //     );
-    //   })
-    // })
-    // .catch(error => {
-    //   displayNews = <h3>There was an error getting your news. Try again later.</h3>
-    //   console.log(error);
-    // })
+    axios.get('/get-tweets')
+    .then(result => {
+      displayNews = result.data.dataChunk.map((value, i) => {
+        return (
+          <div>
+            <h2 style={dateStyle}>{value.created_at}</h2>
+            <h3 style={paraFont}>{value.text}</h3>
+            <h1 style={divider}></h1>
+          </div>
+        );
+      })
+    })
+    .catch(error => {
+      displayNews = <h3>There was an error getting your news. Try again later.</h3>
+      console.log(error);
+    })
   }
   
   render() {
