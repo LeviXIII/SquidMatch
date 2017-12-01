@@ -20,7 +20,7 @@ class AccountInfo extends Component {
         if (!this.props.accountRedirect) {
             return <Redirect to="/" />
         }
-
+        
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>Create Account</h1>
@@ -132,7 +132,7 @@ class AccountInfo extends Component {
                     </Col>
                 </FormGroup>
 
-                <FormGroup controlId="formHorizontalPassword">
+                {/* <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={3} sm={2}>
                         Status
                     </Col>
@@ -145,7 +145,7 @@ class AccountInfo extends Component {
                             <option value="Appear Offline">Appear Offline</option>
                         </FormControl>
                     </Col>
-                </FormGroup>
+                </FormGroup> */}
             
                 <FormGroup>
                     <Col xs={8} sm={4} md={4} lg={4} 

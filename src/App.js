@@ -77,7 +77,7 @@ class App extends Component {
     
     socket.on('connect', () => {
       this.setState({
-        socket: socket
+        socket: socket,
       })
     })
 
@@ -197,7 +197,9 @@ class App extends Component {
   registerInfo = (e) => {
     e.preventDefault();
 
-    if (/^\d{4}-\d{4}-\d{4}$/g.test(this.state.userNsid)) {
+    if (/^\d{4}-\d{4}-\d{4}$/g.test(this.state.userNsid) && 
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(this.state.userEmail)
+      ) {
       axios.post('/register', {
           username: this.state.username,
           password: this.state.userPassword,
@@ -208,7 +210,7 @@ class App extends Component {
           rank: this.state.userRank,
           mode: this.state.userMode,
           weapon: this.state.userWeapon,
-          status: this.state.userStatus,
+          status: "Available",
       })
       .then(result => {
         localStorage.setItem('token', result.data.token);
@@ -216,6 +218,7 @@ class App extends Component {
           userId: result.data.id,
           isLoggedIn: true,
           accountRedirect: false,
+          userStatus: "Available"
         });
       })
       .catch(error => {
@@ -324,6 +327,24 @@ class App extends Component {
 
   //Log out the user
   userLogout = () => {
+    
+    socket.emit('exit-chat', {
+      username: this.state.username,
+      from: this.state.userFrom
+    })
+
+    axios.put('/logout/'+this.state.username, {
+      status: "Offline",
+      notify: false,
+      from: ''
+    })
+    .then(result => {
+      console.log("Logged out");
+    })
+    .catch(error => {
+      console.log("Couldn't log out", error);
+    })
+    
     localStorage.removeItem('token');
     this.setState({
       userId: '',
@@ -373,23 +394,6 @@ class App extends Component {
       ],
     });
 
-    socket.emit('exit-chat', {
-      username: this.state.username,
-      from: this.state.userFrom
-    })
-
-    axios.put('/logout/'+this.state.username, {
-      status: "Offline",
-      notify: false,
-      from: ''
-    })
-    .then(result => {
-      console.log("Logged out");
-    })
-    .catch(error => {
-      console.log("Couldn't log out");
-    })
-
   }
 
   getUserLoginInput = (e) => {
@@ -409,7 +413,6 @@ class App extends Component {
     this.setState({
       [e.target.name]: e.target.value
     })
-    console.log('CRITERIA: '+e.target.name+ ': ' +e.target.value)
   }
 
   // getCriteriaCheckBox = (e) => {

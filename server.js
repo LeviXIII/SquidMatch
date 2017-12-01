@@ -335,6 +335,7 @@ app.post('/register', (req, res) => {
       if(error) {
           return res.status(500).json(error);
       }
+
       //Create a new user and add the user's hashed password
       //as well as their information into the database.
       User({
@@ -368,7 +369,7 @@ app.post('/register', (req, res) => {
         });
       })
       .catch(error => {
-        console.log('here!!!', error)
+        console.log(error)
         res.status(500).json({
           error: error,
           signedUp: false

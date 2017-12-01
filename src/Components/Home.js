@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { Alert, Button } from 'react-bootstrap';
 
 class Home extends Component {
+  
   render() {
 
     this.props.verifyToken();

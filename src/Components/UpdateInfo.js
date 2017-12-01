@@ -133,7 +133,7 @@ class UpdateInfo extends Component {
                                     onChange={e => this.props.getAccountInfo(e)}>
                             <option value="Available">Available</option>
                             <option value="Unavailable">Unavailable</option>
-                            <option value="Appear Offline">Appear Offline</option>
+                            {/* <option value="Appear Offline">Appear Offline</option> */}
                         </FormControl>
                     </Col>
                 </FormGroup>

@@ -53,10 +53,10 @@ class SiteHeader extends Component {
                                 onSelect={(status) => this.props.setStatus("Unavailable")}>
                             Unavailable
                         </MenuItem>
-                        <MenuItem disabled={this.props.isChatting} eventKey={1.3}
+                        {/* <MenuItem disabled={this.props.isChatting} eventKey={1.3}
                                 onSelect={(status) => this.props.setStatus("Appear Offline")}>
                             Appear Offline
-                        </MenuItem>
+                        </MenuItem> */}
                         <MenuItem divider />
                         <MenuItem eventKey={1.4}
                             onSelect={this.props.getUserInfo}>
