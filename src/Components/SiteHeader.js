@@ -7,7 +7,8 @@ import Avatar from 'react-avatar';
 class SiteHeader extends Component {
     
   render() {
-
+    //Credit for the background images
+    console.log("Thanks to NathPlays and JapanYoshi from DeviantArt for the header background & Splatoon Font!")
     let changeShape = true; //Vars to note if a user has a notification.
     
     if (this.props.userNote === true) {
@@ -23,22 +24,22 @@ class SiteHeader extends Component {
     return(
       <div>
         <Jumbotron className="container">
-          <h1 className="siteTitle">Squid Match</h1>
+          <h1 className="siteTitle"><Link to="/home">Squid Match</Link></h1>
           <p style={subTitle}>Find active players to play with in Splatoon 2</p>
           <Navbar style={navbarStyle} fluid inverse collapseOnSelect={true}>
             <Navbar.Header>
                 <Navbar.Toggle />
             </Navbar.Header>
             <Navbar.Collapse>
-                <Nav style={navItemStyle}>
+                <Nav>
                     <NavItem disabled={this.props.isChatting}>
-                        <Link to="/home">Home</Link>
+                        <Link style={navItemStyle} to="/choose-criteria">Find Squad</Link>
                     </NavItem>
                     <NavItem disabled={this.props.isChatting}>
-                        <Link to="/news">News</Link>
+                        <Link style={navItemStyle} to="/news">News</Link>
                     </NavItem>
                     <NavItem disabled={this.props.isChatting}>
-                        <Link to="/choose-criteria">Find Squad</Link>
+                        <Link style={navItemStyle} to="/home">Help</Link>
                     </NavItem>
                 </Nav>
                 <Nav style={navItemStyle} pullRight>
@@ -71,7 +72,7 @@ class SiteHeader extends Component {
                         }
                         <MenuItem divider />
                         <MenuItem eventkey={1.6}
-                                    onSelect={this.props.userLogout}>Logout</MenuItem>
+                                    onSelect={this.props.userLogout}>Logout ({this.props.username})</MenuItem>
                     </NavDropdown>
                 </Nav>
             </Navbar.Collapse>
@@ -91,7 +92,7 @@ const splatoonFont = {
 }
 
 const subTitle = {
-    fontFamily: 'paintball',
+    fontFamily: 'overpass',
     textAlign: 'center',
     color: 'gainsboro',
     paddingLeft: '2%',
@@ -102,7 +103,7 @@ const subTitle = {
 
 const statusLabel = {
     fontSize: '1em',
-    color: 'white',
+    color: 'gainsboro',
 }
 
 const navbarStyle = {
@@ -116,6 +117,7 @@ const navItemStyle = {
     color: 'gainsboro',
 }
 
+const style = Object.assign({}, navItemStyle);
 //const style = Object.assign(Object.assign(Object.assign({}, splatoonFont), subTitle), titleHeading);
 
 export default SiteHeader;

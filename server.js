@@ -39,57 +39,11 @@ connection.on('open', () => {
   //Open connection for sockets
   io.sockets.on('connection', socket => {
     
-    // //Listen for when a user joins the chat.
-    // socket.on('addUser', (username) => {
-    //   socket.username = username; //Assign username to the socket.
-    //   socket.room = username;      //Assign default room to socket.
-    //   socket.join(username);        //Connect the socket to the default room.
-
-    //   socket.emit('client:joinchat', username, socket.room) //Tell the client that they're connected to the chat.
-    //   socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username+' has joined the channel.') //Notify all other sockets that a new user has joined.
-    //   socket.emit('updaterooms', rooms, `${socket.room}`) //Update the room list for the client.
-    // })
-
-    //Event listener for adding a new room to the list.
-    // socket.on('addRoom', room => {
-    //   rooms.push(room.roomname) //Add room to array.
-    //   socket.leave(socket.room) //Remove user from previous room.
-    //   socket.join(room.roomname) //Join new room.
-    //   socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room') //Broadcast that user left old room.
-    //   socket.room = room.roomname //Assign the room name to the socket.
-    //   socket.emit('client:joinchat', socket.username, room.roomname) //Emit to client that they've joined new room.
-    //   io.emit('updaterooms', rooms, room.roomname) //Emit to all sockets that there is a new room on the list.
-    // })
-
-    //Event listener for switching rooms
-    // socket.on('switchRoom', newroom=>{
-    //   if(newroom !== socket.room){
-    //     socket.leave(socket.room)
-    //     socket.join(newroom)
-    //     socket.emit('client:joinchat', 'SERVER', newroom)
-    //     socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room')
-    //     socket.room = newroom
-    //     socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room')
-    //     socket.emit('updaterooms', rooms, newroom)
-    //   }
-    //   else {
-    //     socket.emit('client:channelerror', 'SERVER', 'You\'re already in that channel!')
-    //   }
-    // })
-    
     //Event for Sending Messages. Sends the info of the user and message 
     //when sending a message.
     socket.on('sendchat', data => {
       io.sockets.in(socket.room).emit('updatechat', data);
     })
-    
-    //Event Listener for disconnecting.
-    // socket.on('disconnect', ()=>{
-    //   delete usernames[socket.username] //Remove the username from our table of usernames.
-    //   io.sockets.emit('updateusers', usernames) //Update the userlist on each of our clients.
-    //   socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected') //Broadcast that a user has disconnected from the chat.
-    //   socket.leave(socket.room) //Remove the socket from the room that they were in last.
-    // })
 
     //Used to cause an update which will send invites out to all group members.
     socket.on('check-invites', () => {
@@ -116,6 +70,7 @@ connection.on('open', () => {
 
       //Broadcast to room owner that you declined.
       socket.broadcast.to(socket.room).emit('user-declined', data);
+
     })
 
     socket.on('add-user-to-room', (data) => {
@@ -125,16 +80,17 @@ connection.on('open', () => {
           socket.room = rooms[i];         
           socket.join(rooms[i]);
 
+          socket.to(socket.room).emit('updatechat', {
+            sender: 'Admin',
+            message: `${data.username} has joined the chat!`
+          });
         }
       }
-      socket.to(socket.room).emit('updatechat', {
-        sender: 'Admin',
-        message: `${data.username} has joined the chat!`
-      });
+
     })
 
+    //When exiting chat.
     socket.on('exit-chat', (data) => {
-
       //Find squad leader's room.
       for (let i=0; i < rooms.length; i++) {
         if (rooms[i] === data.from) {
@@ -157,36 +113,21 @@ connection.on('open', () => {
 
 //Search Twitter feed for news on Splatoon 2 from Nintendo.
 app.get('/get-tweets', (req, res) => {
-  T.get('statuses/user_timeline', { screen_name: '@SplatoonSwitch', count: 20, exclude_replies: true } , function(err, data, resp) {
-    if (!err) {
-      res.status(200).json({
-        dataChunk: data
-      });
+  T.get('statuses/user_timeline', { 
+    screen_name: 'SplatoonSwitch', 
+    count: 10, exclude_replies: true } , 
+    function(err, data, resp) {
+      if (!err) {
+        res.status(200).json({
+          dataChunk: data
+        });
+      }
+      else {
+        console.log(err);
+      }
     }
-    else {
-      console.log(err);
-    }
-    
-  })
-  
+  )
 })
-
-
-//Function to authorize the user to enter the rest of the site.
-// function authorize(req, res, next) {
-//   //Get the token from the 'Authorization' header
-//   let tokenToValidate = req.headers['authorization'];
-
-//   //Verify the token, using our secret key
-//   jwt.verify(tokenToValidate, secretKey, (err, decodedPayload) => {
-//       if(err) {
-//           //If there was an error, this token is a fraud
-//           //We should turn this request away with a 403
-//           return res.sendStatus(403);
-//       }
-//       next();
-//   })
-// }
 
 app.get('/get-invite-note/:username', (req, res) => {
   User.findOne({ username: req.params.username })
@@ -344,7 +285,7 @@ app.post('/login', (req, res) => {
           let payload = {
               //Issuer is which server created this token.
               //Save this for when your app is in production.
-              /* iss: 'mattlab.com', */ 
+              /* iss: '*.com', */ 
               
               //Subject field is what user this is on behalf of.
               sub: username,
@@ -377,18 +318,6 @@ app.post('/login', (req, res) => {
     console.log(error);
   })
 
-  // User.findOneAndUpdate(
-  //   { username: username },
-  //   { status: "Available" },
-  //   {}
-  // )
-  // .then(result => {
-  //   res.status(200);
-  // })
-  // .catch(error => {
-  //   console.log(error);
-  // })
-  
 }); //app.post
 
 app.post('/register', (req, res) => {
@@ -406,7 +335,6 @@ app.post('/register', (req, res) => {
       if(error) {
           return res.status(500).json(error);
       }
-      console.log(typeof req.body.nsid);
       //Create a new user and add the user's hashed password
       //as well as their information into the database.
       User({
@@ -453,6 +381,53 @@ app.post('/register', (req, res) => {
 
 app.post('/search-criteria', (req, res) => {
 
+  //Magic!
+  //Check to see which elements in the array match the fields required to search.
+  //If they do, add the field to the query.
+  //If a value is "any", find all values in the field.
+  // for (let i=0; i < req.body.searchArray.length; i++) {
+  //   if (/age.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+  //     if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+  //       searchQuery["$and"].push({ age: {$regex: /^.*$/ } }); //regex searches from start to end for anything.
+  //     }
+  //     else {
+  //       searchQuery["$and"].push({ age: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+  //     }
+  //   }
+  //   if (/location.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+  //     if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+  //       searchQuery["$and"].push({ location: {$regex: /^.*$/ } });
+  //     }
+  //     else {
+  //       searchQuery["$and"].push({ location: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+  //     }
+  //   }
+  //   if (/rank.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+  //     if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+  //       searchQuery["$and"].push({ rank: {$regex: /^.*$/ } });
+  //     }
+  //     else {
+  //       searchQuery["$and"].push({ rank: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+  //     }
+  //   }
+  //   if (/mode.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+  //     if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+  //       searchQuery["$and"].push({ mode: {$regex: /^.*$/ } });
+  //     }
+  //     else {
+  //       searchQuery["$and"].push({ mode: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+  //     }
+  //   }
+  //   if (/weapon.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
+  //     if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
+  //       searchQuery["$and"].push({ weapon: {$regex: /^.*$/ } });
+  //     }
+  //     else {
+  //       searchQuery["$and"].push({ weapon: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
+  //     }
+  //   }
+  // }
+
   //Build the query object in order to search dynamically.
   let searchQuery = {}
   searchQuery['$and'] = []; //Start an $and query
@@ -463,51 +438,43 @@ app.post('/search-criteria', (req, res) => {
   //Check to see which elements in the array match the fields required to search.
   //If they do, add the field to the query.
   //If a value is "any", find all values in the field.
-  for (let i=0; i < req.body.searchArray.length; i++) {
-    if (/age.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
-      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
-        searchQuery["$and"].push({ age: {$regex: /^.*$/ } }); //regex searches from start to end for anything.
-      }
-      else {
-        searchQuery["$and"].push({ age: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
-      }
-    }
-    if (/location.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
-      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
-        searchQuery["$and"].push({ location: {$regex: /^.*$/ } });
-      }
-      else {
-        searchQuery["$and"].push({ location: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
-      }
-    }
-    if (/rank.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
-      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
-        searchQuery["$and"].push({ rank: {$regex: /^.*$/ } });
-      }
-      else {
-        searchQuery["$and"].push({ rank: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
-      }
-    }
-    if (/mode.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
-      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
-        searchQuery["$and"].push({ mode: {$regex: /^.*$/ } });
-      }
-      else {
-        searchQuery["$and"].push({ mode: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
-      }
-    }
-    if (/weapon.*$/ig.test(Object.keys(req.body.searchArray[i]))) {
-      if (req.body.searchArray[i][Object.keys(req.body.searchArray[i])] === "Any") {
-        searchQuery["$and"].push({ weapon: {$regex: /^.*$/ } });
-      }
-      else {
-        searchQuery["$and"].push({ weapon: req.body.searchArray[i][Object.keys(req.body.searchArray[i])] });
-      }
-    }
+  if (req.body.searchAge === "Any") {
+    searchQuery["$and"].push({ age: {$regex: /^.*$/ } }); //regex searches from start to end for anything.
+  }
+  else {
+    searchQuery["$and"].push({ age: req.body.searchAge });
+  }
+  
+  if (req.body.searchLocation === "Any") {
+    searchQuery["$and"].push({ location: {$regex: /^.*$/ } });
+  }
+  else {
+    searchQuery["$and"].push({ location: req.body.searchLocation });
+  }
+  
+  if (req.body.searchRank === "Any") {
+    searchQuery["$and"].push({ rank: {$regex: /^.*$/ } });
+  }
+  else {
+    searchQuery["$and"].push({ rank: req.body.searchRank });
+  }
+  
+  if (req.body.searchMode === "Any") {
+    searchQuery["$and"].push({ mode: {$regex: /^.*$/ } });
+  }
+  else {
+    searchQuery["$and"].push({ mode: req.body.searchMode });
+  }
+  
+  if (req.body.searchWeapon === "Any") {
+    searchQuery["$and"].push({ weapon: {$regex: /^.*$/ } });
+  }
+  else {
+    searchQuery["$and"].push({ weapon: req.body.searchWeapon });
   }
 
   //Find the users that match the given criteria by time in the queue.
-  User.find(searchQuery).sort({ time: -1 })
+  User.find(searchQuery).sort({ time: 1 })
   .then(result => {
     res.json({result: result});
   })

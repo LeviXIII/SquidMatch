@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Link } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Col } from 'react-bootstrap';
 import axios from 'axios';
 import io from 'socket.io-client';
 
@@ -45,11 +45,11 @@ class App extends Component {
       searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
-      ageBox: false,
-      locationBox: false,
-      rankBox: false,
-      modeBox: false,
-      weaponBox: false,
+      // ageBox: false,
+      // locationBox: false,
+      // rankBox: false,
+      // modeBox: false,
+      // weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
       isChatting: false,
@@ -194,33 +194,43 @@ class App extends Component {
   }
 
   //Registers a new user.
-  registerInfo = () => {
-    axios.post('/register', {
-        username: this.state.username,
-        password: this.state.userPassword,
-        email: this.state.userEmail,
-        nsid: this.state.userNsid,
-        age: this.state.userAge,
-        location: this.state.userLocation,
-        rank: this.state.userRank,
-        mode: this.state.userMode,
-        weapon: this.state.userWeapon,
-        status: this.state.userStatus,
-    })
-    .then(result => {
-      localStorage.setItem('token', result.data.token);
-      this.setState({
-        userId: result.data.id,
-        isLoggedIn: true,
-        accountRedirect: false,
-      });
-    })
-    .catch(error => {
+  registerInfo = (e) => {
+    e.preventDefault();
+
+    if (/^\d{4}-\d{4}-\d{4}$/g.test(this.state.userNsid)) {
+      axios.post('/register', {
+          username: this.state.username,
+          password: this.state.userPassword,
+          email: this.state.userEmail,
+          nsid: this.state.userNsid,
+          age: this.state.userAge,
+          location: this.state.userLocation,
+          rank: this.state.userRank,
+          mode: this.state.userMode,
+          weapon: this.state.userWeapon,
+          status: this.state.userStatus,
+      })
+      .then(result => {
+        localStorage.setItem('token', result.data.token);
+        this.setState({
+          userId: result.data.id,
+          isLoggedIn: true,
+          accountRedirect: false,
+        });
+      })
+      .catch(error => {
+        this.setState({ 
+          verifyMessage: "Your email or NSID are incorrect.",
+        })
+        console.log("There was an error: " + error);
+      })
+    }
+    else {
       this.setState({ 
         verifyMessage: "Your email or NSID are incorrect.",
       })
-      console.log("There was an error: " + error);
-    })
+      console.log("There was an error");
+    }
   }
 
   //Get the current user's information.
@@ -245,8 +255,10 @@ class App extends Component {
   }
 
   //Update a user.
-  updateUser = () => {
-    if (/\d{4}-\d{4}-\d{4}/g.test(this.state.userNsid) === true) {
+  updateUser = (e) => {
+    e.preventDefault();
+
+    if (/^\d{4}-\d{4}-\d{4}$/g.test(this.state.userNsid)) {
       axios.put('/update-user-info/'+this.state.username, {
         nsid: this.state.userNsid,
         age: this.state.userAge,
@@ -279,7 +291,6 @@ class App extends Component {
         password: this.state.userPassword
       })
       .then(result => {
-        console.log(result)
         if (result.data.message === undefined || null) {
           localStorage.setItem('token', result.data.token);
           this.setState({
@@ -298,7 +309,6 @@ class App extends Component {
         }
       })
       .catch(error => {
-        console.log(error);
         this.setState({
           verifyMessage: "Please sign up for an account.",
         });
@@ -309,10 +319,7 @@ class App extends Component {
         verifyMessage: "Please enter a valid username or password.",
       })
     }
-    console.log(this.state.userNsid)
-    //Decide whether to show the Create Button on the Create Account
-    //form.
-    //this.setState({ showCreateButton: true })
+  
   }
 
   //Log out the user
@@ -340,11 +347,11 @@ class App extends Component {
       searchWeapon: 'Any',
       verifiedPassword: '',
       verifyMessage: '',
-      ageBox: false,
-      locationBox: false,
-      rankBox: false,
-      modeBox: false,
-      weaponBox: false,
+      // ageBox: false,
+      // locationBox: false,
+      // rankBox: false,
+      // modeBox: false,
+      // weaponBox: false,
       isLoggedIn: false,
       isRegistering: false,
       isChatting: false,
@@ -405,19 +412,19 @@ class App extends Component {
     console.log('CRITERIA: '+e.target.name+ ': ' +e.target.value)
   }
 
-  getCriteriaCheckBox = (e) => {
-    if (this.state[e.target.name] === false) {
-      this.setState({
-        [e.target.name]: true
-      })
-    }
-    else {
-      this.setState({
-        [e.target.name]: false
-      })
-    }
-    console.log('CHECKBOXES: '+e.target.name+ ': ' +e.target.value)
-  }
+  // getCriteriaCheckBox = (e) => {
+  //   if (this.state[e.target.name] === false) {
+  //     this.setState({
+  //       [e.target.name]: true
+  //     })
+  //   }
+  //   else {
+  //     this.setState({
+  //       [e.target.name]: false
+  //     })
+  //   }
+  //   console.log('CHECKBOXES: '+e.target.name+ ': ' +e.target.value)
+  // }
 
   getGroupMembers = (group) => {
     //Send everyone in the group a notification of being invited
@@ -533,27 +540,41 @@ class App extends Component {
   //Search for the criteria specified by the user.
   searchCriteria = () => {
     
-    let searchArray = [];
-    let disabledBoxes = {
-      searchAge: this.state.ageBox,
-      searchLocation: this.state.locationBox,
-      searchRank: this.state.rankBox,
-      searchMode: this.state.modeBox,
-      searchWeapon: this.state.mainBox
-    }
+    // let searchArray = [];
+    // let disabledBoxes = {
+    //   searchAge: this.state.ageBox,
+    //   searchLocation: this.state.locationBox,
+    //   searchRank: this.state.rankBox,
+    //   searchMode: this.state.modeBox,
+    //   searchWeapon: this.state.mainBox
+    // }
 
     //Go through object to find all the non-checked boxes and push them
     //into an array.
-    for (let i in disabledBoxes) {
-      if (disabledBoxes[i] === false) { 
-        searchArray.push({ [i]: this.state[i] });
-      }
-    }
+    // for (let i in disabledBoxes) {
+    //   if (disabledBoxes[i] === false) { 
+    //     searchArray.push({ [i]: this.state[i] });
+    //   }
+    // }
+
+    // let searchArray = [];
+    // let disabledBoxes = {
+    //   searchAge: this.state.ageBox,
+    //   searchLocation: this.state.locationBox,
+    //   searchRank: this.state.rankBox,
+    //   searchMode: this.state.modeBox,
+    //   searchWeapon: this.state.mainBox
+    // }
 
     axios.post('/search-criteria', {
       status: "Available",
       notify: false,           
-      searchArray: searchArray
+      searchAge: this.state.searchAge,
+      searchLocation: this.state.searchLocation,
+      searchRank: this.state.searchRank,
+      searchMode: this.state.searchMode,
+      searchWeapon: this.state.searchWeapon
+      //searchArray: searchArray
     })
     .then(result => {
       this.setState({
@@ -641,7 +662,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    //this.userLogout();
+    this.userLogout();
     socket.disconnect(true);
   }
 
@@ -668,12 +689,17 @@ class App extends Component {
           </Modal.Body>
 
           <Modal.Footer>
-          <Button style={cancelButton}
-                  onClick={this.declineInvite}>Decline</Button>
-          <Link to="/chat">
-            <Button style={proceedButton}
-                    onClick={this.joinChat}>Booyah!</Button>
-          </Link>
+          <Col xs={4} sm={4} md={4} lg={4}
+                        xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
+            <Button style={cancelButton}
+                    onClick={this.declineInvite}>Decline</Button>
+          </Col>
+          <Col xs={4} sm={4} md={4} lg={4}>
+            <Link to="/chat">
+              <Button style={proceedButton}
+                      onClick={this.joinChat}>Booyah!</Button>
+            </Link>
+          </Col>
           </Modal.Footer>
         </Modal>
         </div>
@@ -746,11 +772,11 @@ class App extends Component {
         
         <Route path="/choose-criteria" exact render={() =>
           <ChooseCriteria isLoggedIn={this.state.isLoggedIn}
-                          ageBox={this.state.ageBox}
-                          locationBox={this.state.locationBox}
-                          rankBox={this.state.rankBox}
-                          modeBox={this.state.modeBox}
-                          weaponBox={this.state.weaponBox}
+                          // ageBox={this.state.ageBox}
+                          // locationBox={this.state.locationBox}
+                          // rankBox={this.state.rankBox}
+                          // modeBox={this.state.modeBox}
+                          // weaponBox={this.state.weaponBox}
                           userStatus={this.state.userStatus}
                           searchAge={this.state.searchAge}
                           searchLocation={this.state.searchLocation}
@@ -762,7 +788,7 @@ class App extends Component {
                           userLogout={this.userLogout}
                           getCriteria={this.getCriteria}
                           searchCriteria={this.searchCriteria}
-                          getCriteriaCheckBox={this.getCriteriaCheckBox}
+                          //getCriteriaCheckBox={this.getCriteriaCheckBox}
                           verifyToken={this.verifyToken}/>}/>
         
         <Route path="/results" exact render={() =>

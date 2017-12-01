@@ -11,7 +11,7 @@ class Chat extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-      //this.props.userLogout();
+      this.props.userLogout();
       return <Redirect to="/" />
     }
 
@@ -25,7 +25,7 @@ class Chat extends Component {
           </div>
       )
     })
-    console.log('Here!', this.props.messages);
+
     return (
       <div>
         <div className="divBorder col-xs-10 col-sm-10 col-md-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 formAccountSettings">
@@ -79,9 +79,9 @@ const spacing = {
 }
 
 const nsid = {
-  fontFamily: 'paintball',
-  fontSize: '85%',
-  //color: '#948f8f',
+  fontFamily: 'overpass',
+  fontSize: '95%',
+  color: '#948f8f',
 }
 
 const title = {

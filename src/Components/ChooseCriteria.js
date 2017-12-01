@@ -9,7 +9,7 @@ class ChooseCriteria extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-        //this.props.userLogout();
+        this.props.userLogout();
       return <Redirect to="/" />
     }
 
@@ -31,15 +31,15 @@ class ChooseCriteria extends Component {
       <h1 style={Title}>Choose your Criteria</h1>
       {/* <h3 style={subTitle}>Your search criteria will be decided by the order you use.</h3> */}
       <Form horizontal className="container-fluid">
-        <Col xs={2} sm={2} md={2}
+        {/* <Col xs={2} sm={2} md={2}
             xsOffset={10} smOffset={10} mdOffset={10}>
             On/Off
-        </Col>
+        </Col> */}
         <FormGroup style={subTitle} controlId="formHorizontalPassword">
-            <Col componentClass={ControlLabel} xs={2} sm={2} md={2} lg={2}>
+            <Col componentClass={ControlLabel} xs={3} sm={2} md={2} lg={2}>
                 Age
             </Col>
-            <Col xs={8} sm={8} md={8} lg={8} >
+            <Col xs={9} sm={9} md={9} lg={9}>
                 <FormControl componentClass="select" placeholder="Any"
                             name="searchAge" value={this.props.searchAge}
                             disabled={this.props.ageBox}
@@ -51,10 +51,10 @@ class ChooseCriteria extends Component {
                     <option value="Any">Any</option>
                 </FormControl>
             </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
+            {/* <Col xs={2} sm={2} md={2} lg={2}>
                 <Checkbox name="ageBox" checked={this.props.ageBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
-            </Col>
+            </Col> */}
             
         </FormGroup>
 
@@ -62,7 +62,7 @@ class ChooseCriteria extends Component {
             <Col componentClass={ControlLabel} xs={3} sm={2}>
                 Location
             </Col>
-            <Col xs={7} sm={8} md={8} lg={8} >
+            <Col xs={9} sm={9} md={9} lg={9}>
                 <FormControl componentClass="select" placeholder="Any"
                             name="searchLocation" value={this.props.searchLocation}
                             disabled={this.props.locationBox}
@@ -74,17 +74,17 @@ class ChooseCriteria extends Component {
                     <option value="Any">Any</option>
                 </FormControl>
             </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
+            {/* <Col xs={2} sm={2} md={2} lg={2}>
                 <Checkbox name="locationBox" checked={this.props.locationBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
-            </Col>
+            </Col> */}
         </FormGroup>
 
         <FormGroup style={subTitle} controlId="formHorizontalPassword">
             <Col componentClass={ControlLabel} xs={3} sm={2}>
                 Rank
             </Col>
-            <Col xs={7} sm={8} md={8} lg={8}>
+            <Col xs={9} sm={9} md={9} lg={9}>
                 <FormControl componentClass="select" placeholder="Any"
                             name="searchRank" value={this.props.searchRank}
                             disabled={this.props.rankBox}
@@ -97,17 +97,17 @@ class ChooseCriteria extends Component {
                     <option value="Any">Any</option>
                 </FormControl>
             </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
+            {/* <Col xs={2} sm={2} md={2} lg={2}>
                 <Checkbox name="rankBox" checked={this.props.rankBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
-            </Col>
+            </Col> */}
         </FormGroup>
 
         <FormGroup style={subTitle} controlId="formHorizontalPassword">
             <Col componentClass={ControlLabel} xs={3} sm={2}>
                 Mode
             </Col>
-            <Col xs={7} sm={8} md={8} lg={8}>
+            <Col xs={9} sm={9} md={9} lg={9}>
                 <FormControl componentClass="select" placeholder="Any"
                             name="searchMode" value={this.props.searchMode}
                             disabled={this.props.modeBox}
@@ -118,17 +118,17 @@ class ChooseCriteria extends Component {
                     <option value="Any">Any</option>
                 </FormControl>
             </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
+            {/* <Col xs={2} sm={2} md={2} lg={2}>
                 <Checkbox name="modeBox" checked={this.props.modeBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
-            </Col>
+            </Col> */}
         </FormGroup>
 
         <FormGroup style={subTitle} controlId="formHorizontalPassword">
             <Col componentClass={ControlLabel} xs={3} sm={2}>
                 Weapon
             </Col>
-            <Col xs={7} sm={8} md={8} lg={8} >
+            <Col xs={9} sm={9} md={9} lg={9}>
                 <FormControl componentClass="select" placeholder="Any"
                             name="searchWeapon" value={this.props.searchWeapon}
                             disabled={this.props.weaponBox}
@@ -143,10 +143,10 @@ class ChooseCriteria extends Component {
                     <option value="Any">Any</option>
                 </FormControl>
             </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
+            {/* <Col xs={2} sm={2} md={2} lg={2}>
                 <Checkbox name="weaponBox" checked={this.props.weaponBox}
                         onChange={(e) => this.props.getCriteriaCheckBox(e)}/>
-            </Col>
+            </Col> */}
         </FormGroup>
 
         {this.props.userStatus === "Available" ? (

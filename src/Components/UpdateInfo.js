@@ -28,7 +28,7 @@ class UpdateInfo extends Component {
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>Update Account</h1>
             {/* <h1 style={subTitle}>{this.props.showCreateButton ? 'Create Account' : 'Update Account'}</h1> */}
-            <Form onSubmit={this.props.updateUser} horizontal className="container-fluid">
+            <Form onSubmit={e => this.props.updateUser(e)} horizontal className="container-fluid">
                 <FormGroup controlId="formHorizontalPassword">
                     <Col componentClass={ControlLabel} xs={2}>
                         NS_ID
@@ -151,7 +151,7 @@ class UpdateInfo extends Component {
                         xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
                     {/* <Link to="/choose-criteria"> */}
                       <Button style={loginButton} type="button"
-                              onClick={this.props.updateUser}>
+                              onClick={e => this.props.updateUser(e)}>
                           Update
                       </Button>
                     {/* </Link> */}

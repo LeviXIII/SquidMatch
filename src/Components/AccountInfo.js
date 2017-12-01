@@ -24,7 +24,7 @@ class AccountInfo extends Component {
         return (
             <div className="divBorder col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 formAccountSettings">
             <h1 style={subTitle}>Create Account</h1>
-            <Form onSubmit={(e) => {this.props.updateAccount(e)}} horizontal className="container-fluid">
+            <Form onSubmit={e => this.props.registerInfo(e)} horizontal className="container-fluid">
                 {!this.props.canUpdate &&
                 <FormGroup controlId="formHorizontalEmail">
                     <Col componentClass={ControlLabel} xs={2}>
@@ -151,7 +151,7 @@ class AccountInfo extends Component {
                     <Col xs={8} sm={4} md={4} lg={4} 
                         xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
                         <Button style={loginButton} type="button"
-                                onClick={this.props.registerInfo}>
+                                onClick={e => this.props.registerInfo(e)}>
                             Create
                         </Button>
                     </Col>

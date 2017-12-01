@@ -12,6 +12,9 @@ import passwordIcon from '../Images/passwordIcon.png';
 class LoginForm extends Component {
 
     render() {
+
+        //Credit for the body background image:
+        console.log("Thanks to CrazyDiamond from 'Wallpaper Abyss - Alpha Coders' for the inkling background!")
         
         if (this.props.isLoggedIn) {
             return <Redirect to="/choose-criteria" />
@@ -73,25 +76,18 @@ class LoginForm extends Component {
                 <h5 style={subTitle}>Passwords need to be at least 8 characters long</h5>
                 </div>
                 }
-
-                <FormGroup>
-                    <Col xs={8} sm={5} md={4} lg={3} 
-                        xsOffset={2} smOffset={4} mdOffset={4} lgOffset={4}>
-                    {/* <Checkbox className="headings">Remember Me</Checkbox> */}
-                    </Col>
-                </FormGroup>
             
                 {!this.props.showCreateButton ? (
                 <FormGroup>
-                    <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={2} mdOffset={2} lgOffset={2}>
+                    <Col xs={10} sm={2} md={4} lg={4} 
+                        xsOffset={2} smOffset={0} mdOffset={2} lgOffset={2}>
                     <Button style={signupButton} type="button"
                             onClick={this.props.verifyPassword}>
                         Sign up
                     </Button>
                     </Col>
-                    <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={0} mdOffset={0} lgOffset={0}>
+                    <Col xs={10} sm={2} md={4} lg={4} 
+                        xsOffset={2} smOffset={4} mdOffset={0} lgOffset={0}>
                     <Button style={loginButton} type="submit"
                             onChange={(e) => this.props.loginForm(e)}>
                         Login
@@ -100,15 +96,15 @@ class LoginForm extends Component {
                 </FormGroup>
                 ) : (
                 <FormGroup>
-                    <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={2} mdOffset={2} lgOffset={2}>
+                    <Col xs={10} sm={2} md={4} lg={4} 
+                        xsOffset={2} smOffset={0} mdOffset={2} lgOffset={2}>
                     <Button style={signupButton} type="button"
                             onClick={this.props.checkPassword}>
                         Create Account
                     </Button>
                     </Col>
-                    <Col xs={8} sm={4} md={4} lg={4} 
-                        xsOffset={2} smOffset={0} mdOffset={0} lgOffset={0}>
+                    <Col xs={10} sm={2} md={4} lg={4} 
+                        xsOffset={2} smOffset={4} mdOffset={0} lgOffset={0}>
                     <Button style={loginButton} type="submit"
                             onChange={(e) => this.props.loginForm(e)}>
                         Login
@@ -171,7 +167,7 @@ const loginButton = {
 }
 
 const subTitle =  {
-    fontFamily: 'paintball',
+    fontFamily: 'overpass',
     textAlign: 'center',
     color: '#948f8f',
     marginTop: '1%'

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { ListGroup, ListGroupItem, InputGroup,
-        Modal, Button } from 'react-bootstrap';
+        Modal, Button, Col } from 'react-bootstrap';
 import Avatar from 'react-avatar';
 import axios from 'axios';
 
@@ -139,29 +139,39 @@ class Results extends Component {
               <div>
                 <Modal show={this.props.showModal} onHide={this.props.setShowModal}>
                   <Modal.Header>
-                  <Modal.Title style={subTitle}>Current Squad Members</Modal.Title>
-                    <h4 style={warning}>*Click on a member to remove from list*</h4>
+                    <Modal.Title componentClass='h2' style={subTitle}>Current Squad Members</Modal.Title>
                   </Modal.Header>
 
                   <Modal.Body>
                   {displaySquad}
                   {displaySquad.length === 3 ? (
-                    <h3 style={subTitle}>Start chatting!</h3>
+                    <div>
+                      <h3 style={remove}>Invite and Chat!</h3>
+                      <h4 style={warning}>Click on a member to remove from list</h4>
+                    </div>
                   ) : (
-                    <h3 style={warning}>You may pick up to {3 - displaySquad.length} more members</h3>
+                    <div>
+                      <h3 style={warning}>You may pick up to 3 members</h3>
+                      <h4 style={warning}>Click on a member to remove from list</h4>
+                    </div>
                   )
                   }
                   </Modal.Body>
 
                   <Modal.Footer>
+                  <Col xs={4} sm={4} md={4} lg={4}
+                        xsOffset={2} smOffset={1} mdOffset={1} lgOffset={1}>
                     <Button style={cancelButton}
                             onClick={this.props.setShowModal}>Close</Button>
+                  </Col>
+                  <Col xs={4} sm={4} md={4} lg={4}>
                     <Link to="/chat">
                       <Button style={proceedButton}
                               onClick={(group) => this.props.getGroupMembers(squad)}>
-                              Chat
+                              Invite
                       </Button>
                     </Link>
+                    </Col>
                   </Modal.Footer>
                 </Modal>
                 
@@ -237,9 +247,8 @@ const title = {
 }
 
 const warning = {
-  fontFamily: 'paintball',
+  fontFamily: 'overpass',
   textAlign: 'center',
-  color: '#948f8f',
 }
 
 const remove = {

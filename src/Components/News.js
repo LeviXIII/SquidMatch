@@ -30,7 +30,7 @@ class News extends Component {
     this.props.verifyToken();
 
     if (!this.props.isLoggedIn) {
-      //this.props.userLogout();
+      this.props.userLogout();
       return <Redirect to="/" />
     }
 
@@ -58,7 +58,7 @@ const title = {
 }
 
 const dateStyle = {
-  fontFamily: 'paintball',
+  fontFamily: 'overpass',
   marginBottom: '0px',
   color: '#948f8f',
 }
