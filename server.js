@@ -79,13 +79,13 @@ connection.on('open', () => {
         if (rooms[i] === data.from) {
           socket.room = rooms[i];         
           socket.join(rooms[i]);
-
-          socket.to(socket.room).emit('updatechat', {
-            sender: 'Admin',
-            message: `${data.username} has joined the chat!`
-          });
         }
       }
+
+      socket.to(socket.room).emit('updatechat', {
+        sender: 'Admin',
+        message: `${data.username} has joined the chat!`
+      });
 
     })
 
@@ -95,9 +95,9 @@ connection.on('open', () => {
       for (let i=0; i < rooms.length; i++) {
         if (rooms[i] === data.from) {
           socket.room = rooms[i];        
-          socket.join(rooms[i]); 
         }
       }
+      socket.join(socket.room); 
 
       //Update people in the room.
       socket.to(socket.room).emit('updatechat', 
@@ -484,7 +484,7 @@ app.post('/search-criteria', (req, res) => {
   })
 })
 
-app.put('/logout/:username', (req, res) => {
+app.post('/logout/:username', (req, res) => {
   User.findOneAndUpdate(
     { username: req.params.username },
     { status: req.body.status,
@@ -522,6 +522,6 @@ app.put('/decline-invite/:username', (req, res) => {
 
 //This is to enuser that no matter what endpoint the user attempts to go to, they
 //receive our minified react files.
-app.get('*', (req, res) => {
-  res.sendFile(__dirname+'/build/index.html');
-})
+// app.get('*', (req, res) => {
+//   res.sendFile(__dirname+'/build/index.html');
+// })

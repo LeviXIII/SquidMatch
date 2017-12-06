@@ -333,7 +333,7 @@ class App extends Component {
       from: this.state.userFrom
     })
 
-    axios.put('/logout/'+this.state.username, {
+    axios.post('/logout/'+this.state.username, {
       status: "Offline",
       notify: false,
       from: ''
